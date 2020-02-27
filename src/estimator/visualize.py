@@ -77,7 +77,7 @@ class KeyPointVisualizer(object):
                 if start_p in part_line and end_p in part_line:
                     start_xy = part_line[start_p]
                     end_xy = part_line[end_p]
-                    cv2.line(bg, start_xy, end_xy, self.line_color[i], 4)
+                    cv2.line(bg, start_xy, end_xy, self.line_color[i], 8)
         return bg
 
     def vis_ske(self, frame, humans, scores):

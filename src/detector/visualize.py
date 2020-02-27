@@ -7,5 +7,5 @@ class BBoxVisualizer(object):
 
     def visualize(self, bboxes, img):
         for bbox in bboxes:
-            img = cv2.rectangle(img, (bbox[0], bbox[1]), (bbox[2], bbox[3]), self.color, 2)
+            img = cv2.rectangle(img, (bbox[0], bbox[1]), (bbox[2], bbox[3]), self.color, 8)
         return img

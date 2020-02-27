@@ -6,6 +6,7 @@ adjust_file_num = 4
 basic_line = 60
 adjust_line = 20
 
+
 class txtGenerator:
     def __init__(self, cls_name):
         self.folder_name = cls_name

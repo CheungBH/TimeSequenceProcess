@@ -19,7 +19,7 @@ pose_batch = 80
 
 
 # Video process
-video_process_class = ["normal", "drown"]
+video_process_class = ["drown"]
 
 # Coordinate process
 coord_step = 10

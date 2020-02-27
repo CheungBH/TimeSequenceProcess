@@ -34,7 +34,7 @@ class PoseEstimator(object):
                 return orig_img, []
 
     def process_img(self, inps, orig_img, boxes, scores, pt1, pt2):
-        # try:
+        try:
             datalen = inps.size(0)
             leftover = 0
             if (datalen) % self.batch_size:
@@ -49,5 +49,5 @@ class PoseEstimator(object):
             hm = torch.cat(hm).cpu().data
             ske_img, skeleton = self.__get_skeleton(boxes, scores, hm, pt1, pt2, orig_img)
             return skeleton, ske_img
-        # except:
-        #     return [], orig_img, orig_img
+        except:
+            return [], orig_img, orig_img

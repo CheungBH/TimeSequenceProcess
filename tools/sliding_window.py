@@ -13,7 +13,7 @@
 frame, step = 30, 10
 
 
-def process( coord_path, dest_path):
+def process(coord_path, dest_path):
     with open(coord_path, "r") as rf:
         lines = [line for line in rf.readlines()]
         rf.close()
