@@ -57,8 +57,10 @@ class TCNTrainer:
             if batch_idx > 0:
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tSteps: {}'.format(
                     ep, batch_idx * batch_size, len(self.train_loader.dataset),
-                        100. * batch_idx / len(self.train_loader), train_loss.item() / 10, steps))
-                train_loss = 0
+                        100. * batch_idx / len(self.train_loader), train_loss.item() / 10, steps), file=self.log)
+
+        train_loss /= len(self.train_loader.dataset)
+        return train_loss
 
     def __test(self):
         self.model.eval()
@@ -75,21 +77,21 @@ class TCNTrainer:
                 pred = output.data.max(1, keepdim=True)[1]
                 correct += pred.eq(torch.max(target, 1, keepdim=True)[1]).sum().item()
             test_loss /= len(self.valid_loader.dataset)
-            print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+            print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
                 test_loss, correct, total,
                 100. * correct / total), file=self.log)
             return test_loss
 
     def train_tcn(self):
-        min_loss = 1000
-        # os.makedirs("tmp",exist_ok=True)
+        min_val_loss, min_train_loss = float("inf"), float("inf")
         for epoch in range(1, self.epoch + 1):
-            self.__train(epoch)
+            train_loss = self.__train(epoch)
+            min_train_loss = train_loss if train_loss < min_train_loss else min_train_loss
             val_loss = self.__test()
-            if val_loss < min_loss:
-                min_loss = val_loss
-                print("save model")
+            if val_loss < min_val_loss:
+                min_val_loss = val_loss
                 torch.save(self.model, self.name)
+        return min_train_loss, min_val_loss
 
 
 if __name__ == '__main__':
