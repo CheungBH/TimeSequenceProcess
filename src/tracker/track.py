@@ -15,6 +15,9 @@ class ObjectTracker(object):
         self.id2bbox = {}
         self.id2ske = {}
 
+    def init_tracker(self):
+        self.tracker.init_KF()
+
     def __match(self):
         ske_center = [torch.mean(self.skeletons[idx], dim=0) for idx in range(len(self.skeletons))]
         box_center = [((list(self.id2bbox.values())[idx][0] + list(self.id2bbox.values())[idx][2]) / 2,

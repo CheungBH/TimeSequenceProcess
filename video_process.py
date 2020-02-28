@@ -12,7 +12,9 @@ class VideoProcessor:
         self.cap = cv2.VideoCapture(video_path)
         self.height, self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.coord = []
-        self.out = cv2.VideoWriter(draw_video_path, cv2.VideoWriter_fourcc(*'XVID'), 10, store_size)
+        self.draw_img = draw_video_path
+
+        # self.out = cv2.VideoWriter(draw_video_path, cv2.VideoWriter_fourcc(*'XVID'), 10, store_size)
         self.file = open(output_txt_path, "w")
 
     def __normalize_coordinates(self, coordinates):
@@ -32,7 +34,7 @@ class VideoProcessor:
         cnt = 0
         while True:
             cnt += 1
-            print(cnt)
+            print("Current frame is {}".format(cnt))
             ret, frame = self.cap.read()
             if ret:
                 kps, img = IP.process_img(frame)
@@ -40,34 +42,38 @@ class VideoProcessor:
                     self.coord = self.__normalize_coordinates(kps)
                     self.__write_txt()
 
-                    resize = cv2.resize(img, store_size)
-                    self.out.write(resize)
-                    cv2.imshow("res", resize)
-                    cv2.waitKey(2)
+                resize = cv2.resize(img, store_size)
+                cv2.imwrite(os.path.join(self.draw_img, "{}.jpg".format(cnt)), resize)
+                # self.out.write(resize)
+                cv2.imshow("res", resize)
+                cv2.waitKey(2)
+
             else:
                 self.cap.release()
                 self.file.close()
-                self.out.release()
+                cv2.destroyAllWindows()
+                # self.out.release()
                 break
 
 
 class VideoFolderProcessor:
     def __init__(self, folder):
         self.video_ls = [os.path.join("1_video", folder, video_name) for video_name in os.listdir(os.path.join("1_video", folder))]
-        self.drawn_video_ls = [path_name.replace("1_video", "2_drawn_video") for path_name in self.video_ls]
+        self.draw_video_folder = [path_name.replace("1_video", "2_drawn_video")[:-4] for path_name in self.video_ls]
         self.txt_ls = [(path_name.replace("1_video", "3_coord"))[:-4] + ".txt" for path_name in self.video_ls]
         os.makedirs(os.path.join("2_drawn_video", folder), exist_ok=True)
         os.makedirs(os.path.join("3_coord", folder), exist_ok=True)
         print("Processing video folder: {}".format(folder))
 
     def process_folder(self):
-        for sv, dv, ot in zip(self.video_ls, self.drawn_video_ls, self.txt_ls):
-            if os.path.exists(dv):
-                print("Video {} has been processed!".format(sv))
-                continue
-
+        for sv, dv, ot in zip(self.video_ls, self.draw_video_folder, self.txt_ls):
+            # if os.path.exists(dv):
+            #     print("Video {} has been processed!".format(sv))
+            #     continue
+            os.makedirs(dv,exist_ok=True)
             VP = VideoProcessor(sv, dv, ot)
             VP.process_video()
+            IP.init_sort()
             print("Finish processing video {}".format(sv))
 
 

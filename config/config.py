@@ -19,19 +19,19 @@ pose_batch = 80
 
 
 # Video process
-video_process_class = ["drown"]
+video_process_class = ["test1", "test"]
 
 # Coordinate process
 coord_step = 10
 coord_frame = 30
 coord_process_method = "ordinary"  #Do not change now
-coord_process_class = ["normal", "drown"]
+coord_process_class = ["swim", "drown"]
 
 # Merge input
 merge_step = 10
 merge_frame = 30
 merge_process_method = "ordinary"
-merge_class = ["normal", "drown"]
+merge_class = ["swim", "drown"]
 merge_dest_name = "input1"
 merge_comment = "This is a test"
 

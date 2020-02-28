@@ -23,6 +23,10 @@ from skimage import io
 from sklearn.utils.linear_assignment_ import linear_assignment
 import time
 import argparse
+
+import warnings
+
+warnings.filterwarnings('ignore')
 from filterpy.kalman import KalmanFilter
 
 def iou(bb_test,bb_gt):
@@ -71,6 +75,7 @@ class KalmanBoxTracker(object):
   This class represents the internel state of individual tracked objects observed as bbox.
   """
   count = 0
+  print("Count is {}".format(count))
   def __init__(self,bbox):
     """
     Initialises a tracker using initial bounding box.
@@ -175,6 +180,9 @@ class Sort(object):
     self.min_hits = min_hits
     self.trackers = []
     self.frame_count = 0
+
+  def init_KF(self):
+    KalmanBoxTracker.count = 0
 
   def update(self,dets):
     """

@@ -19,6 +19,9 @@ class ImgProcessor:
         self.show_img = show_img
         self.BBV = BBoxVisualizer()
 
+    def init_sort(self):
+        self.object_tracker.init_tracker()
+
     def __process_kp(self, kps):
         new_kp = []
         for bdp in range(len(kps)):
