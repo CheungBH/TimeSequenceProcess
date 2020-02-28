@@ -19,7 +19,7 @@ pose_batch = 80
 
 
 # Video process
-video_process_class = ["test1", "test"]
+video_process_class = ["drown", "swim"]
 
 # Coordinate process
 coord_step = 10
@@ -39,12 +39,12 @@ merge_comment = "This is a test"
 batch_size = 32
 activation = 'relu'
 optimizer = 'Adam'
-data_path = 'network'
 
-epoch_ls = [100]
-dropout_ls = [0.1]
-network_structure_ls = [0]
-val_ratio_ls = [0.2]
+data_path = 'models/TCN/data'
+networks = ["TCN"]
+epoch_ls = {"TCN": [10, 20, 30]}
+dropout_ls = {"TCN": [0.05, 0.1, 0.2]}
+lr_ls = {"TCN": [1e-4]}
 
 class_name = ["Backswing", "Standing", "Final", "Downswing"]
 X_vector = 36

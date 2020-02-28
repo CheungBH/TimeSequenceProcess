@@ -34,7 +34,7 @@ class VideoProcessor:
         cnt = 0
         while True:
             cnt += 1
-            print("Current frame is {}".format(cnt))
+            # print("Current frame is {}".format(cnt))
             ret, frame = self.cap.read()
             if ret:
                 kps, img = IP.process_img(frame)
