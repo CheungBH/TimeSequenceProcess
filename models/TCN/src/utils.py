@@ -27,8 +27,8 @@ def get_data(data_pth):
                 labels = 1
             parent_dir = os.path.join(data_pth,curr_file)
             file_list.append([os.path.join(parent_dir, filename), labels])
-    a = 1
     return file_list
+
 
 def write_txt(file_list, output_pth):
     with open(output_pth, 'a') as f:
@@ -41,9 +41,11 @@ def write_txt(file_list, output_pth):
                     str_line = str_line + str(data) + "\n"
             f.write(str_line)
 
+
 def train_val_split(datas):
     train_data, test_data = train_test_split(datas, test_size=0.2, random_state=42, shuffle=True)
     return train_data, test_data
+
 
 class TCNData(data.Dataset):
     def __init__(self, datas):
@@ -74,7 +76,6 @@ class TCNData(data.Dataset):
     
     def __getitem__(self, idx):
         keypoint = np.loadtxt(self.kp[idx]).astype(np.float32) #reshape(34, -1).[:,:30]
-        #print('seq shape:', seq.shape)
 
         if keypoint.shape[0]<30:
             tmp = np.zeros((30-keypoint.shape[0],34)).astype(np.float32)

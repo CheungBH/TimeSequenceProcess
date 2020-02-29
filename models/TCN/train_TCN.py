@@ -5,7 +5,6 @@ import torch.nn as nn
 from .src.utils import TCNData, train_val_split, get_data
 from .src.model import TCN
 import numpy as np
-import os
 
 n_classes = 2
 input_channels = 30

@@ -40,11 +40,11 @@ batch_size = 32
 activation = 'relu'
 optimizer = 'Adam'
 
-data_path = 'models/TCN/data'
-networks = ["TCN"]
-epoch_ls = {"TCN": [10, 20, 30]}
-dropout_ls = {"TCN": [0.05, 0.1, 0.2]}
-lr_ls = {"TCN": [1e-4]}
+data_path = 'models/LSTM/data'
+networks = ["LSTM"]
+epoch_ls = {"LSTM": [10, 20, 30]}
+dropout_ls = {"LSTM": [0.05, 0.1, 0.2]}
+lr_ls = {"LSTM": [1e-4]}
 
 class_name = ["Backswing", "Standing", "Final", "Downswing"]
 X_vector = 36
