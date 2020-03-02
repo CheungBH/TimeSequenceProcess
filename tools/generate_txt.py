@@ -33,6 +33,6 @@ class txtGenerator:
 
 
 if __name__ == '__main__':
-    for cls in ["test1", "test2", "test3"]:
+    for cls in ["test100", "test101"]:
         txtG = txtGenerator(cls)
         txtG.generate()

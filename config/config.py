@@ -1,6 +1,5 @@
 import torch
 
-
 device = "cuda:0"
 print("Using {}".format(device))
 
@@ -33,25 +32,20 @@ merge_frame = 30
 merge_process_method = "ordinary"
 merge_class = ["swim", "drown"]
 merge_dest_name = "input1"
-merge_comment = "This is a test"
+merge_comment = "Origin swim and drown, with 30 frames, 10 steps"
 
 # Auto training config
-batch_size = 32
-activation = 'relu'
-optimizer = 'Adam'
-
-data_path = 'models/LSTM/data'
+data_path = '5_input/input1'
 networks = ["LSTM"]
-epoch_ls = {"LSTM": [10, 20, 30]}
-dropout_ls = {"LSTM": [0.05, 0.1, 0.2]}
-lr_ls = {"LSTM": [1e-4]}
+epoch_ls = {"LSTM": [10, 15], "TCN": [10, 20, 30]}
+dropout_ls = {"LSTM": [0.2, 0.3], "TCN": [0.05, 0.1, 0.2]}
+lr_ls = {"LSTM": [1e-4], "TCN": [1e-4]}
 
-class_name = ["Backswing", "Standing", "Final", "Downswing"]
-X_vector = 36
-training_frame = 15
-data_info = "test for openpose"
-begin_num = 1
+data_info = "The data comes from input1"
+batch_size = {"LSTM": 128, "TCN": 128}
+out_dest = "tmp/LSTM5"
 
-
+kps_num = 34
+training_frame = 30
 
 

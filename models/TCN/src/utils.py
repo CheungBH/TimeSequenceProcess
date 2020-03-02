@@ -84,7 +84,7 @@ class TCNData(data.Dataset):
         seq = torch.from_numpy(keypoint)#.permute(1,0)
         label = self.labels[idx]
         label = self.get_one_hot_num(label)
-        return (seq, label)
+        return seq, label
 
     
 if __name__ == '__main__':

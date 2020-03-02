@@ -67,9 +67,10 @@ class VideoFolderProcessor:
 
     def process_folder(self):
         for sv, dv, ot in zip(self.video_ls, self.draw_video_folder, self.txt_ls):
-            # if os.path.exists(dv):
-            #     print("Video {} has been processed!".format(sv))
-            #     continue
+            if os.path.exists(dv):
+                print("Video {} has been processed!".format(sv))
+                continue
+
             os.makedirs(dv,exist_ok=True)
             VP = VideoProcessor(sv, dv, ot)
             VP.process_video()

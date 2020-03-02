@@ -41,7 +41,7 @@ class CoordFolderProcessor:
 
 
 if __name__ == '__main__':
-        for cls in cls_ls:
-            assert os.path.exists("3_coord/{}".format(cls)), "The coordinate folder doesn't exist! Please run ‘video_process.py’ to generate the coordinate files first"
-            CFP = CoordFolderProcessor(cls, frame, step)
-            CFP.process_folder()
+    for cls in cls_ls:
+        assert os.path.exists("3_coord/{}".format(cls)), "The coordinate folder doesn't exist! Please run ‘video_process.py’ to generate the coordinate files first"
+        CFP = CoordFolderProcessor(cls, frame, step)
+        CFP.process_folder()

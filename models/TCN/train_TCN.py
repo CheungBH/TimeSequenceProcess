@@ -22,7 +22,7 @@ torch.manual_seed(1111)
 
 
 class TCNTrainer:
-    def __init__(self, data_path, epoch, dropout, lr, model_name, log_name):
+    def __init__(self, data_path, epoch, dropout, lr, model_name, log_name, batch_size):
         self.epoch = epoch
         self.model = TCN(input_channels, n_classes, channel_sizes, kernel_size=kernel_size, dropout=dropout)
         self.model.cuda()
@@ -30,13 +30,14 @@ class TCNTrainer:
         self.log = open(log_name, "w")
         self.criterion = nn.CrossEntropyLoss().to(device)
         self.optimizer = optim.Adam(self.model.parameters(), lr=lr, betas=(0.9, 0.999), eps=1e-8)
+        self.batch_size = batch_size
 
         data = get_data(data_path)
         train_data, test_data = train_val_split(data)
         train_set = TCNData(train_data)
         vaild_set = TCNData(test_data)
-        self.train_loader = DataLoader(train_set, batch_size=8, shuffle=True)
-        self.valid_loader = DataLoader(vaild_set, batch_size=8, shuffle=True)
+        self.train_loader = DataLoader(train_set, self.batch_size, shuffle=True)
+        self.valid_loader = DataLoader(vaild_set, self.batch_size, shuffle=True)
 
     def __train(self, ep):
         global steps
@@ -94,4 +95,4 @@ class TCNTrainer:
 
 
 if __name__ == '__main__':
-    TCNTrainer("data", 100, 0.05, 1e-4, "wtf.pth", "wtf.txt").train_tcn()
+    TCNTrainer("data", 100, 0.05, 1e-4, "wtf.pth", "wtf.txt", 8).train_tcn()
