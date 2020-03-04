@@ -117,5 +117,5 @@ class LSTMTrainer:
 
 if __name__ == '__main__':
     os.makedirs("LSTM_graph",exist_ok=True)
-    LSTMTrainer("../../tmp/input1", 10, 0.2, "", "LSTM_graph/model.h5", 'LSTM_graph/train_log.csv', 128).train_LSTM()
+    LSTMTrainer("../../tmp/input1", 10, 0.2, "", "LSTM.h5", 'train_log.csv', 32).train_LSTM()
 

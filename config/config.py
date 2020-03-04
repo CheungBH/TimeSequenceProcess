@@ -35,7 +35,7 @@ merge_dest_name = "input1"
 merge_comment = "Origin swim and drown, with 30 frames, 10 steps"
 
 # Auto training config
-data_path = '5_input/input1'
+data_path = 'tmp/test/'
 networks = ["LSTM"]
 epoch_ls = {"LSTM": [10, 15], "TCN": [10, 20, 30]}
 dropout_ls = {"LSTM": [0.2, 0.3], "TCN": [0.05, 0.1, 0.2]}

@@ -8,8 +8,8 @@ cls_ls = c.coord_process_class
 
 
 class CoordFolderProcessor:
-    def __init__(self, cls, frame, step):
-        self.frame, self.step, self.coord_folder = frame, step, cls
+    def __init__(self, clss, frm, stp):
+        self.frame, self.step, self.coord_folder = frm, stp, clss
         self.coord_folder = os.path.join("3_coord", cls)
         self.dest_folder = os.path.join("4_data", method, "{}frames".format(frame), "{}steps".format(step))
         os.makedirs(os.path.join(self.dest_folder, cls))
@@ -42,6 +42,7 @@ class CoordFolderProcessor:
 
 if __name__ == '__main__':
     for cls in cls_ls:
-        assert os.path.exists("3_coord/{}".format(cls)), "The coordinate folder doesn't exist! Please run ‘video_process.py’ to generate the coordinate files first"
+        assert os.path.exists("3_coord/{}".format(cls)), "The coordinate folder doesn't exist! Please run " \
+                                                         "‘video_process.py’ to generate the coordinate files first"
         CFP = CoordFolderProcessor(cls, frame, step)
         CFP.process_folder()
