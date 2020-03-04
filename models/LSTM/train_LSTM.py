@@ -14,6 +14,7 @@ warnings.filterwarnings('ignore')
 
 input_channels = config.training_frame
 seq_length = config.kps_num
+num_classes = 2
 
 
 class LSTMTrainer:
@@ -25,6 +26,8 @@ class LSTMTrainer:
         self.model_name = model_name
         self.log_name = log_name
         self.batch_size = batch_size
+        self.num = num_classes
+        self.vector = [0] * self.num
         self.model = self.__get_model()
         self.loss_graph_name = (self.model_name.replace("model", "LSTM_graph/loss")).replace(".h5", ".jpg")
         self.acc_graph_name = (self.model_name.replace("model", "LSTM_graph/acc")).replace(".h5", ".jpg")
@@ -32,27 +35,33 @@ class LSTMTrainer:
         self.label = open(os.path.join(data_path, "label.txt"), "r")
         self.cls_path = os.path.join(data_path, "cls.txt")
 
+    def __convert_one_hot(self, idx):
+        self.vector[idx] = 1
+        vector = self.vector
+        self.vector = [0] * self.num
+        return vector
+
     def __ls_preprocess(self, ls):
-        try:
-            ls.remove("\n")
-        except:
-            pass
+        try: ls.remove("\n")
+        except: pass
 
         while True:
-            try:
-                ls.remove("")
-            except ValueError:
-                break
+            try: ls.remove("")
+            except ValueError:break
         return ls
 
     def __load_data(self):
+        # one_hot_label = [self.__convert_one_hot(int(line[:-1])) for line in self.label.readlines()]
         label = [int(line[:-1]) for line in self.label.readlines()]
+        one_hot_label = [self.__convert_one_hot(item) for item in label]
         data = []
         for line in self.data.readlines():
             origin_ls = self.__ls_preprocess(line.split("\t"))
             ls = [float(item) for item in origin_ls]
             data.append(np.array(ls).reshape((input_channels, seq_length)))
-        return np.array(data), np.array(label)
+        self.data.close()
+        self.label.close()
+        return np.array(data), np.array(one_hot_label)
 
     def __get_model(self):
         model = Sequential()
@@ -62,7 +71,7 @@ class LSTMTrainer:
         model.add(LSTM(128, dropout=self.dropout, recurrent_dropout=self.dropout, return_sequences=False))
         model.add(Dense(64, activation='relu'))
         model.add(Dense(16, activation='relu'))
-        model.add(Dense(1, activation='sigmoid'))
+        model.add(Dense(num_classes, activation='softmax'))
         return model
 
     def scheduler(self, epoch):
@@ -106,7 +115,7 @@ class LSTMTrainer:
         filename = self.log_name
         csv_logger = CSVLogger(filename, separator=',', append=True)
         callbacks_list = [csv_logger, reduce_lr]
-        self.model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+        self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         train_x, train_y = self.__load_data()
         hist = self.model.fit(x=train_x, y=train_y, batch_size=self.batch_size, epochs=self.epoch, verbose=1,
                               callbacks=callbacks_list, validation_split=0.2)
@@ -117,5 +126,4 @@ class LSTMTrainer:
 
 if __name__ == '__main__':
     os.makedirs("LSTM_graph",exist_ok=True)
-    LSTMTrainer("../../tmp/input1", 10, 0.2, "", "LSTM.h5", 'train_log.csv', 32).train_LSTM()
-
+    LSTMTrainer("../../tmp/input1", 1000, 0.2, "", "LSTM.h5", 'train_log.csv', 32).train_LSTM()

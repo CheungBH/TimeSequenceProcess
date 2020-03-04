@@ -18,10 +18,11 @@ class TCNLoader(data.Dataset):
         self.vector = [0] * self.max
 
     def get_one_hot_num(self, label):
-        self.vector[label] = 1
-        one_hot_vector = self.vector
-        self.vector = [0] * self.max
-        return torch.LongTensor(one_hot_vector)
+        # self.vector[label] = 1
+        # one_hot_vector = self.vector
+        # self.vector = [0] * self.max
+        # return torch.LongTensor(one_hot_vector)
+        return torch.tensor(label)
 
     def __len__(self):
         return len(self.datas)

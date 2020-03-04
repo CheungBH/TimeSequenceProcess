@@ -47,5 +47,5 @@ out_dest = "tmp/LSTM5"
 
 kps_num = 34
 training_frame = 30
-
+log_interval = 5
 
