@@ -1,11 +1,13 @@
 from models.TCN.train_TCN import TCNTrainer
 from models.LSTM.train_LSTM import LSTMTrainer
+from models.ConvLSTM.train_ConvLSTM import ConvLSTMTrainer
 from config import config
 import time
 import shutil
 import os
 
 res_dest = config.out_dest
+#if os.path.exists(res_dest): raise ValueError("The destination path '{}' exists!".format(res_dest))
 os.makedirs(os.path.join(res_dest, "model"), exist_ok=True)
 os.makedirs(os.path.join(res_dest, "log"), exist_ok=True)
 
@@ -13,9 +15,10 @@ os.makedirs(os.path.join(res_dest, "log"), exist_ok=True)
 if __name__ == '__main__':
     res = open(os.path.join(res_dest, "result.txt"), "w")
     shutil.copy(os.path.join(config.data_path, "cls.txt"), res_dest)
+    with open(os.path.join(res_dest, "cls.txt"), "r") as f:
+        n_classes = len(f.readline()[0][:-1].split("\t"))
     with open(os.path.join(res_dest, "cls.txt"), "a+") as f:
         f.write("\n" + config.data_info)
-        f.close()
 
     cnt = 0
     for net in config.networks:
@@ -31,20 +34,34 @@ if __name__ == '__main__':
                     if net == "TCN":
                         log_name = os.path.join(res_dest, "log", "{}_".format(net) + time_str + ".txt")
                         model_name = os.path.join(res_dest, "model", "TCN_" + time_str + ".pth")
-                        train_loss, val_loss = TCNTrainer(config.data_path, epoch, dropout, lr, model_name, log_name, batch_size).train_tcn()
+                        train_loss, val_loss = TCNTrainer(config.data_path, epoch, dropout, lr, model_name,
+                                                          log_name, batch_size, n_classes).train_tcn()
                         cost = time.time() - begin_time
                         print("Total time cost is {}s\n".format(cost))
-                        res.write("{}: \n{} epochs, {} learning-rate, {} dropout\n".format("TCN_" + time_str + ".pth", epoch, lr, dropout))
+                        res.write("{}: \n{} epochs, {} learning-rate, {} dropout\n".format(
+                            "TCN_" + time_str + ".pth", epoch, lr, dropout))
                         res.write("Min train loss is {}. Min val loss is {}\n\n".format(train_loss, val_loss))
                     elif net == "LSTM":
                         log_name = os.path.join(res_dest, "log", "{}_".format(net) + time_str + ".csv")
                         model_name = os.path.join(res_dest, "model", "LSTM_" + time_str + ".h5")
                         os.makedirs(os.path.join(res_dest, "LSTM_graph/loss"), exist_ok=True)
                         os.makedirs(os.path.join(res_dest, "LSTM_graph/acc"), exist_ok=True)
-                        LSTMTrainer(config.data_path, epoch, dropout, lr, model_name, log_name, batch_size).train_LSTM()
+                        LSTMTrainer(config.data_path, epoch, dropout, lr, model_name,
+                                    log_name, batch_size, n_classes).train_LSTM()
                         cost = time.time() - begin_time
                         print("Total time cost is {}s\n".format(cost))
-                        res.write("{}: \n{} epochs, {} learning-rate, {} dropout\n\n".format("LSTM_" + time_str + ".pth", epoch, lr, dropout))
+                        res.write("{}: \n{} epochs, {} learning-rate, {} dropout\n\n".format(
+                            "LSTM_" + time_str + ".pth", epoch, lr, dropout))
                         # res.write("Min train loss is {}. Min val loss is {}\n\n".format(train_loss, val_loss))
+                    elif net == "ConvLSTM":
+                        log_name = os.path.join(res_dest, "log", "{}_".format(net) + time_str + ".txt")
+                        model_name = os.path.join(res_dest, "model", "ConvLSTM_" + time_str + ".pth")
+                        train_loss, val_loss = ConvLSTMTrainer(config.data_path, epoch, dropout, lr, model_name,
+                                                               log_name, batch_size, n_classes).train_convlstm()
+                        cost = time.time() - begin_time
+                        print("Total time cost is {}s\n".format(cost))
+                        res.write("{}: \n{} epochs, {} learning-rate, {} dropout\n".format(
+                            "ConvLSTM_" + time_str + ".pth", epoch, lr, dropout))
+                        res.write("Min train loss is {}. Min val loss is {}\n\n".format(train_loss, val_loss))
                     else:
                         raise ValueError("Wrong model type")

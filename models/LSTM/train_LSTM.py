@@ -14,11 +14,10 @@ warnings.filterwarnings('ignore')
 
 input_channels = config.training_frame
 seq_length = config.kps_num
-num_classes = 2
 
 
 class LSTMTrainer:
-    def __init__(self, data_path, epoch, dropout, lr, model_name, log_name, batch_size):
+    def __init__(self, data_path, epoch, dropout, lr, model_name, log_name, batch_size, n_classes):
         self.dropout = dropout
         self.epoch = epoch
         self.data_path = data_path
@@ -26,7 +25,7 @@ class LSTMTrainer:
         self.model_name = model_name
         self.log_name = log_name
         self.batch_size = batch_size
-        self.num = num_classes
+        self.num = n_classes
         self.vector = [0] * self.num
         self.model = self.__get_model()
         self.loss_graph_name = (self.model_name.replace("model", "LSTM_graph/loss")).replace(".h5", ".jpg")
@@ -71,7 +70,7 @@ class LSTMTrainer:
         model.add(LSTM(128, dropout=self.dropout, recurrent_dropout=self.dropout, return_sequences=False))
         model.add(Dense(64, activation='relu'))
         model.add(Dense(16, activation='relu'))
-        model.add(Dense(num_classes, activation='softmax'))
+        model.add(Dense(self.num, activation='softmax'))
         return model
 
     def scheduler(self, epoch):

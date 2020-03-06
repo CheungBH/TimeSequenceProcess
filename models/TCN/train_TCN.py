@@ -9,11 +9,10 @@ import os
 from sklearn.model_selection import train_test_split
 from config import config
 
-n_classes = 2
+
 input_channels = config.kps_num
 log_interval = config.log_interval
 seq_length = config.training_frame
-kernel_size = 5
 
 device = "cuda:0"
 steps = 0
@@ -21,11 +20,12 @@ steps = 0
 permute = torch.Tensor(np.random.permutation(360).astype(np.float64)).long()
 permute.cuda()
 channel_sizes = [6, 6, 6, 6]
+kernel_size = 5
 torch.manual_seed(1111)
 
 
 class TCNTrainer:
-    def __init__(self, data_path, epoch, dropout, lr, model_name, log_name, batch_size):
+    def __init__(self, data_path, epoch, dropout, lr, model_name, log_name, batch_size, n_classes):
         self.epoch = epoch
         self.batch_size = batch_size
         self.model = TCN(input_channels, n_classes, channel_sizes, kernel_size=kernel_size, dropout=dropout)
@@ -92,9 +92,11 @@ class TCNTrainer:
             train_loss += loss
             steps += seq_length
             if batch_idx > 0 and batch_idx % log_interval == 0:
-                print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tSteps: {}'.format(
+                out_log = 'Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tSteps: {}'.format(
                     ep, batch_idx * self.batch_size, len(self.train_loader.dataset),
-                        100. * batch_idx / len(self.train_loader), train_loss.item() / log_interval, steps))
+                        100. * batch_idx / len(self.train_loader), train_loss.item() / log_interval, steps)
+                print(out_log)
+                self.log.write(out_log + "\n")
 
         train_loss /= len(self.train_loader.dataset)
         return train_loss
@@ -114,9 +116,11 @@ class TCNTrainer:
                 pred = output.data.max(1)[1]
                 correct += pred.eq(target).sum().item()
             test_loss /= len(self.valid_loader.dataset)
-            print('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+            out_log = 'Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
                 test_loss, correct, total,
-                100. * correct / total))
+                100. * correct / total)
+            print(out_log)
+            self.log.write(out_log + "\n")
         test_loss /= len(self.valid_loader.dataset)
         return test_loss
 
