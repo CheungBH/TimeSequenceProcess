@@ -59,4 +59,3 @@ class AutoTesting:
 
     def __write_result(self):
         pass
-

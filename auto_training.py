@@ -18,7 +18,7 @@ if __name__ == '__main__':
     shutil.copy(os.path.join(config.data_path, "cls.txt"), res_dest)
     with open(os.path.join(res_dest, "cls.txt"), "a+") as f:
         f.write("\n" + config.data_info)
-    res.write("model_name,model_type,epochs,dropout,learning-rate,min_train_loss,min_val_loss,max_val_acc")
+    res.write("model_name,model_type,epochs,dropout,learning-rate,min_train_loss,min_val_loss,max_val_acc\n")
 
     cnt = 0
     for net in config.networks:
@@ -38,23 +38,19 @@ if __name__ == '__main__':
                                                           log_name, batch_size, n_classes).train_tcn()
                         cost = time.time() - begin_time
                         print("Total time cost is {}s\n".format(cost))
-                        # res.write("{}: \n{} epochs, {} learning-rate, {} dropout\n".format(
-                        #     "TCN_" + time_str + ".pth", epoch, lr, dropout))
-                        # res.write("Min train loss is {}. Min val loss is {}\n\n".format(train_loss, val_loss))
                         res.write("{},{},{},{},{},{},{},{}\n".format(
-                            model_name, net, epoch, dropout, lr, train_loss, val_loss, val_acc))
+                            "TCN_" + time_str + ".pth", net, epoch, dropout, lr, train_loss, val_loss, val_acc))
                     elif net == "LSTM":
                         log_name = os.path.join(res_dest, "log", "{}_".format(net) + time_str + ".csv")
                         model_name = os.path.join(res_dest, "model", "LSTM_" + time_str + ".h5")
                         os.makedirs(os.path.join(res_dest, "LSTM_graph/loss"), exist_ok=True)
                         os.makedirs(os.path.join(res_dest, "LSTM_graph/acc"), exist_ok=True)
-                        LSTMTrainer(config.data_path, epoch, dropout, lr, model_name,
+                        train_loss, val_loss, val_acc = LSTMTrainer(config.data_path, epoch, dropout, lr, model_name,
                                     log_name, batch_size, n_classes).train_LSTM()
                         cost = time.time() - begin_time
                         print("Total time cost is {}s\n".format(cost))
-                        res.write("{}: \n{} epochs, {} learning-rate, {} dropout\n\n".format(
-                            "LSTM_" + time_str + ".pth", epoch, lr, dropout))
-                        # res.write("Min train loss is {}. Min val loss is {}\n\n".format(train_loss, val_loss))
+                        res.write("{},{},{},{},{},{},{},{}\n".format(
+                            "LSTM_" + time_str + ".h5", net, epoch, dropout, lr, train_loss, val_loss, val_acc))
                     elif net == "ConvLSTM":
                         log_name = os.path.join(res_dest, "log", "{}_".format(net) + time_str + ".txt")
                         model_name = os.path.join(res_dest, "model", "ConvLSTM_" + time_str + ".pth")
@@ -62,10 +58,7 @@ if __name__ == '__main__':
                                                                log_name, batch_size, n_classes).train_convlstm()
                         cost = time.time() - begin_time
                         print("Total time cost is {}s\n".format(cost))
-                        # res.write("{}: \n{} epochs, {} learning-rate, {} dropout\n".format(
-                        #     "ConvLSTM_" + time_str + ".pth", epoch, lr, dropout))
-                        # res.write("Min train loss is {}. Min val loss is {}\n\n".format(train_loss, val_loss))
-                        res.write("{},{},{},{},{},{},{},{}\n".format(
-                            model_name, net, epoch, dropout, lr, train_loss, val_loss, val_acc))
+                        res.write("{},{},{},{},{},{},{},{}\n".format("ConvLSTM_" + time_str + ".pth",
+                                    net, epoch, dropout, lr, train_loss, val_loss, val_acc))
                     else:
                         raise ValueError("Wrong model type")
