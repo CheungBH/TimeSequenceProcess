@@ -130,19 +130,20 @@ class ConvLSTMTrainer:
                 100. * correct / total)
             print(out_log)
             self.log.write(out_log + "\n")
-        return test_loss
+        return test_loss, 100. * correct / total
 
     def train_convlstm(self):
-        min_val_loss, min_train_loss = float("inf"), float("inf")
+        min_val_loss, min_train_loss, max_val_acc = float("inf"), float("inf"), 0
         for epoch in range(1, self.epoch + 1):
             train_loss = self.__train(epoch)
             min_train_loss = train_loss if train_loss < min_train_loss else min_train_loss
-            val_loss = self.__test()
+            val_loss, val_acc = self.__test()
             if val_loss < min_val_loss:
                 min_val_loss = val_loss
                 torch.save(self.model, self.name)
-        return min_train_loss, min_val_loss
+            max_val_acc = max(max_val_acc, val_acc)
+        return min_train_loss, min_val_loss, max_val_acc
 
 
 if __name__ == '__main__':
-    ConvLSTMTrainer("../../tmp/input1", 100, 0.05, 1e-4, "wtf.pth", "wtf.txt", 32).train_convlstm()
+    ConvLSTMTrainer("../../tmp/input1", 100, 0.05, 1e-4, "wtf.pth", "wtf.txt", 32, 2).train_convlstm()

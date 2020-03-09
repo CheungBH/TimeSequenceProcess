@@ -29,7 +29,7 @@ class ImgProcessor:
                 new_kp.append(kps[bdp][coord])
         return new_kp
 
-    def process_img(self, frame):
+    def process_img(self, frame, get_id=1):
         with torch.no_grad():
             inps, orig_img, boxes, scores, pt1, pt2 = self.object_detector.process(frame)
             if boxes is not None:
@@ -39,7 +39,26 @@ class ImgProcessor:
                     id2ske, id2bbox = self.object_tracker.track(boxes, key_points)
                     img = self.IDV.plot_bbox_id(id2bbox, copy.deepcopy(img))
                     try:
-                        kps = self.__process_kp(id2ske[1])
+                        kps = self.__process_kp(id2ske[get_id])
+                    except KeyError:
+                        kps = []
+                    return kps, img
+                else:
+                    return [], img
+            else:
+                return [], frame
+
+    def process_with_all_kps(self, frame, get_id=1):
+        with torch.no_grad():
+            inps, orig_img, boxes, scores, pt1, pt2 = self.object_detector.process(frame)
+            if boxes is not None:
+                key_points, img = self.pose_estimator.process_img(inps, orig_img, boxes, scores, pt1, pt2)
+                img = self.BBV.visualize(boxes, img)
+                if key_points:
+                    id2ske, id2bbox = self.object_tracker.track(boxes, key_points)
+                    img = self.IDV.plot_bbox_id(id2bbox, copy.deepcopy(img))
+                    try:
+                        kps = self.__process_kp(id2ske[get_id])
                     except KeyError:
                         kps = []
                     return kps, img

@@ -2,11 +2,13 @@ import numpy as np
 from keras.models import load_model
 
 
-def test_LSTM(input_data, model_path):
-    model = load_model(model_path)
-    output = model.predict(input_data)
-    pred = np.argmax(output)
-    return pred
+class LSTMPredictor:
+    def __init__(self, model_pth):
+        self.model = model_pth
+
+    def predict(self, data):
+        output = self.model.predict(data)
+        return np.argmax(output)
 
 
 if __name__ == '__main__':
