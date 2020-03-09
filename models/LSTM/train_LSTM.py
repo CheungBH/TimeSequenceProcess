@@ -91,15 +91,18 @@ class LSTMTrainer:
         plt.yticks(fontsize=10)
         plt.tight_layout()
         plt.savefig(self.loss_graph_name)
+        return min(hist["loss"]), min(hist["val_loss"])
 
     def __plot_acc(self, hist):
         fig = plt.figure(figsize=(7.5, 5))
         try:
             plt.plot(hist['accuracy'], linewidth=2.0)
             plt.plot(hist['val_accuracy'], linewidth=2.0)
+            acc = hist["val_accuracy"]
         except:
             plt.plot(hist['acc'], linewidth=2.0)
             plt.plot(hist['val_acc'], linewidth=2.0)
+            acc = hist["val_acc"]
         plt.title('Model Accuracy', fontsize=15)
         plt.ylabel('accuracy', fontsize=15)
         plt.xlabel('epoch', fontsize=15)
@@ -108,6 +111,7 @@ class LSTMTrainer:
         plt.yticks(fontsize=10)
         plt.tight_layout()
         plt.savefig(self.acc_graph_name)
+        return max(acc)
 
     def train_LSTM(self):
         reduce_lr = LearningRateScheduler(self.scheduler)
@@ -119,10 +123,11 @@ class LSTMTrainer:
         hist = self.model.fit(x=train_x, y=train_y, batch_size=self.batch_size, epochs=self.epoch, verbose=1,
                               callbacks=callbacks_list, validation_split=0.2)
         self.model.save(self.model_name)
-        self.__plot_loss(hist.history)
-        self.__plot_acc(hist.history)
+        min_train_loss, min_val_loss = self.__plot_loss(hist.history)
+        max_val_acc = self.__plot_acc(hist.history)
+        return min_train_loss, min_val_loss, max_val_acc
 
 
 if __name__ == '__main__':
     os.makedirs("LSTM_graph",exist_ok=True)
-    LSTMTrainer("../../tmp/input1", 1000, 0.2, "", "LSTM.h5", 'train_log.csv', 32).train_LSTM()
+    LSTMTrainer("../../tmp/input1", 1000, 0.2, "", "LSTM.h5", 'train_log.csv', 32, 2).train_LSTM()
