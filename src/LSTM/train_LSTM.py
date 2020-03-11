@@ -4,7 +4,7 @@ import keras.backend as K
 from keras.models import Sequential
 from keras.layers import Dense, Activation, LSTM, Masking, Dropout, BatchNormalization
 from config import config
-
+from sklearn.model_selection import train_test_split
 from keras.callbacks import LearningRateScheduler
 from keras.callbacks import ModelCheckpoint, CSVLogger
 
@@ -12,8 +12,8 @@ from matplotlib import pyplot as plt
 import warnings
 warnings.filterwarnings('ignore')
 
-input_channels = config.training_frame
-seq_length = config.kps_num
+input_channels = config.kps_num
+seq_length = config.training_frame
 
 
 class LSTMTrainer:
@@ -91,18 +91,15 @@ class LSTMTrainer:
         plt.yticks(fontsize=10)
         plt.tight_layout()
         plt.savefig(self.loss_graph_name)
-        return min(hist["loss"]), min(hist["val_loss"])
 
     def __plot_acc(self, hist):
         fig = plt.figure(figsize=(7.5, 5))
         try:
             plt.plot(hist['accuracy'], linewidth=2.0)
             plt.plot(hist['val_accuracy'], linewidth=2.0)
-            acc = hist["val_accuracy"]
         except:
             plt.plot(hist['acc'], linewidth=2.0)
             plt.plot(hist['val_acc'], linewidth=2.0)
-            acc = hist["val_acc"]
         plt.title('Model Accuracy', fontsize=15)
         plt.ylabel('accuracy', fontsize=15)
         plt.xlabel('epoch', fontsize=15)
@@ -111,7 +108,6 @@ class LSTMTrainer:
         plt.yticks(fontsize=10)
         plt.tight_layout()
         plt.savefig(self.acc_graph_name)
-        return max(acc)
 
     def train_LSTM(self):
         reduce_lr = LearningRateScheduler(self.scheduler)
@@ -119,15 +115,15 @@ class LSTMTrainer:
         csv_logger = CSVLogger(filename, separator=',', append=True)
         callbacks_list = [csv_logger, reduce_lr]
         self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-        train_x, train_y = self.__load_data()
-        hist = self.model.fit(x=train_x, y=train_y, batch_size=self.batch_size, epochs=self.epoch, verbose=1,
-                              callbacks=callbacks_list, validation_split=0.2)
+        data, target = self.__load_data()
+        train_x, test_x, train_y, test_y = train_test_split(data, target, test_size=0.2, random_state=1, shuffle=True)
+        hist = self.model.fit(x=train_x, y=train_y, batch_size=self.batch_size, epochs=self.epoch, verbose=2,
+                              callbacks=callbacks_list, validation_data=(test_x, test_y), shuffle=True)
         self.model.save(self.model_name)
-        min_train_loss, min_val_loss = self.__plot_loss(hist.history)
-        max_val_acc = self.__plot_acc(hist.history)
-        return min_train_loss, min_val_loss, max_val_acc
+        self.__plot_loss(hist.history)
+        self.__plot_acc(hist.history)
 
 
 if __name__ == '__main__':
     os.makedirs("LSTM_graph",exist_ok=True)
-    LSTMTrainer("../../tmp/input1", 1000, 0.2, "", "LSTM.h5", 'train_log.csv', 32, 2).train_LSTM()
+    LSTMTrainer("../../5_input/input1", 1000, 0.2, "", "LSTM.h5", 'train_log.csv', 32, 2).train_LSTM()

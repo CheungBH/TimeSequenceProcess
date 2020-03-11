@@ -2,9 +2,9 @@ import torch
 from torch.utils.data import DataLoader
 import torch.optim as optim
 import torch.nn as nn
-from models.ConvLSTM.model import ConvLSTM
+from src.ConvLSTM.model import ConvLSTM
 from sklearn.model_selection import train_test_split
-from models.ConvLSTM.utils import ConvLstmLoader
+from src.ConvLSTM.utils import ConvLstmLoader
 import sys
 from config import config
 sys.path.append("../../")
@@ -146,4 +146,4 @@ class ConvLSTMTrainer:
 
 
 if __name__ == '__main__':
-    ConvLSTMTrainer("../../tmp/input1", 100, 0.05, 1e-4, "wtf.pth", "wtf.txt", 32, 2).train_convlstm()
+    ConvLSTMTrainer("../../5_input/input1", 100, 0.05, 1e-4, "wtf.pth", "wtf.txt", 32, 2).train_convlstm()

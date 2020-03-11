@@ -21,6 +21,7 @@ class TCNPredictor(object):
 
     def predict(self, data):
         input = self.get_input_data(data)
+        # input = input.type(torch.cuda.FloatTensor)
         output = self.model(input)
         #print('output:',output)
         pred = output.data.max(1, keepdim=True)[1]
@@ -40,8 +41,8 @@ class TCNPredictor(object):
 
 
 if __name__ == '__main__':
-    model_pth = './wtf.pth'
-    input_pth = 'test100_0.txt'
+    model_pth = 'TCN.pth'
+    input_pth = 'data.txt'
     inp = np.loadtxt(input_pth).astype(np.float32).reshape(-1,34)
     prediction = TCNPredictor(model_pth)
     prediction.predict(inp)

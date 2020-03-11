@@ -16,7 +16,7 @@ class IDVisualizer(object):
             cv2.putText(img, "id{}".format(list(id2bbox.keys())[idx]), (int((x1 + x2)/2), int(y1)),
                         cv2.FONT_HERSHEY_PLAIN, 10, self.boxid_color, 10)
             if self.with_bbox:
-                img = cv2.rectangle(img, (int(x1), int(y1)), (int(x2), int(y2)), self.box_color, 2)
+                img = cv2.rectangle(img, (int(x1), int(y1)), (int(x2), int(y2)), self.box_color, 10)
         return img
 
     def plot_skeleton_id(self, id2ske, img):

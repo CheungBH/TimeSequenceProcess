@@ -1,6 +1,6 @@
-from models.TCN.train_TCN import TCNTrainer
-from models.LSTM.train_LSTM import LSTMTrainer
-from models.ConvLSTM.train_ConvLSTM import ConvLSTMTrainer
+from src.TCN.train_TCN import TCNTrainer
+from src.LSTM.train_LSTM import LSTMTrainer
+from src.ConvLSTM.train_ConvLSTM import ConvLSTMTrainer
 from config import config
 import time
 import shutil

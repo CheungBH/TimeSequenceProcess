@@ -2,8 +2,8 @@ import torch
 from torch.utils.data import DataLoader
 import torch.optim as optim
 import torch.nn as nn
-from models.TCN.src.utils import TCNLoader
-from models.TCN.src.model import TCN
+from src.TCN.src.utils import TCNLoader
+from src.TCN.src.model import TCN
 import numpy as np
 import os
 from sklearn.model_selection import train_test_split

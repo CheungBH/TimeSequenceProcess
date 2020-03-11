@@ -19,7 +19,7 @@ class ConvLSTMPredictor:
         return data
 
     def predict(self, data):
-        input = self.get_input_data(data)
+        input = self.get_input_data(data.reshape(-1,1,17,2))
         output = self.model(input)
         pred = output.data.max(1, keepdim=True)[1]
         return pred

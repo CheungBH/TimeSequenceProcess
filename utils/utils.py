@@ -19,6 +19,32 @@ class OneHotConverter:
         return vector
 
 
+class Utils(object):
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def get_angle(center_coor, coor2, coor3):
+        L1 = Utils.cal_dis(coor2,coor3)
+        L2 = Utils.cal_dis(center_coor,coor3)
+        L3 = Utils.cal_dis(center_coor,coor2)
+        Angle = Utils.cal_angle(L1,L2,L3)
+        return Angle
+
+    @staticmethod
+    def cal_dis(coor1, coor2):
+        out = np.square(coor1[0] - coor2[0]) + np.square(coor1[1] - coor2[1])
+        return np.sqrt(out)
+
+    @staticmethod
+    def cal_angle(L1, L2, L3):
+        out = (np.square(L2) + np.square(L3) - np.square(L1)) / (2 * L2 * L3)
+        try:
+            return math.acos(out) * (180 / math.pi)
+        except ValueError:
+            return 180
+
+
 if __name__ == '__main__':
     pass
     # ut = Utils()
