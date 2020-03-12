@@ -47,6 +47,7 @@ merge_comment = "Inpute test: swim, test100, test101, all samples, 30f, 10s"
 # Auto training config
 data_path = '5_input/input1/'
 networks = ["ConvLSTM", "LSTM", "TCN"]
+
 epoch_ls = {"LSTM": [100, 200],
             "TCN": [100, 200, 300],
             "ConvLSTM": [20]}
@@ -61,11 +62,10 @@ batch_size = {"LSTM": 128, "TCN": 128, "ConvLSTM": 32}
 kps_num = 34
 training_frame = 30
 log_interval = 5
-training_labels = {0:"swim",1:"drown"}
+training_labels = {0:"swim", 1:"drown"}
 
 data_info = "The data comes from input1"
 out_dest = "6_network/net_test"
-
 
 
 
@@ -74,7 +74,7 @@ label_comment = "label1: 30 frames, 2 classes: (swim, drown)"
 label_frame = 30
 label_cls = ["swim", "drown"]
 label_folder_name = "label1"
-
+label_video_src = ""
 
 
 
@@ -83,5 +83,9 @@ test_model_folder = ""
 test_video_folder = ""
 test_res_folder = ""
 test_label_folder = ""
+
 test_kps_num = 34
 testing_frame = 30
+
+test_comment = "Input "
+

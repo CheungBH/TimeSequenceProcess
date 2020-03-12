@@ -27,13 +27,13 @@ class Tester:
         self.cap = cv2.VideoCapture(video_path)
         self.height, self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.kps_dict = defaultdict(list)
-        self.label, self.test_id = self.get_label(label_path)
+        self.label, self.test_id = self.__get_label(label_path)
         self.coord = []
         self.pred = defaultdict(str)
         self.pred_dict = defaultdict(list)
         self.res = defaultdict(list)
 
-    def get_label(self, path):
+    def __get_label(self, path):
         with open(path, "r") as lf:
             labels, ids = defaultdict(list), []
             for line in lf.readlines():
@@ -91,7 +91,7 @@ class Tester:
             label, pred = self.label[k], self.pred_dict[k]
             assert len(label) == len(pred)
             for l, p in zip(label, pred):
-                if p == "pass":
+                if l == "pass":
                     self.res[k].append("pass")
                 self.res[k].append(l == p)
         return self.__summarize()
