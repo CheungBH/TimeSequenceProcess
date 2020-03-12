@@ -17,6 +17,7 @@ class ObjectTracker(object):
 
     def init_tracker(self):
         self.tracker.init_KF()
+        self.tracker = Sort()
 
     def __match(self):
         ske_center = [torch.mean(self.skeletons[idx], dim=0) for idx in range(len(self.skeletons))]

@@ -7,7 +7,7 @@ from src.human_detection import ImgprocessorAllKPS as ImgProcessor
 import numpy as np
 from config import config
 import os
-
+import csv
 
 model_folder = config.test_model_folder
 video_folder = config.test_video_folder
@@ -23,7 +23,7 @@ store_size = config.size
 class Tester:
     def __init__(self, model_name, video_path, label_path):
         self.tester = self.__get_tester(model_name)
-        self.video_name = video_path.split("/")[-1]
+        self.video_name = video_path.split("\\")[-1]
         self.cap = cv2.VideoCapture(video_path)
         self.height, self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.kps_dict = defaultdict(list)
@@ -65,7 +65,7 @@ class Tester:
                 pred = self.tester.predict(np.array(v).astype(np.float32))
                 self.pred[k] = cls[pred]
                 self.pred_dict[str(k)].append(cls[pred])
-                print("Predicting id {}".format(k))
+                # print("Predicting id {}".format(k))
                 refresh_idx.append(k)
         for idx in refresh_idx:
             self.kps_dict[idx] = []
@@ -81,7 +81,11 @@ class Tester:
                         (0, 255, 0), 2)
         return img
 
+    def __get_target_pred(self):
+        return {key: value for key,value in self.pred_dict.items() if key in self.test_id}
+
     def __compare(self):
+        self.pred_dict = self.__get_target_pred()
         assert self.pred_dict.keys() == self.label.keys()
         for k in self.pred_dict.keys():
             label, pred = self.label[k], self.pred_dict[k]
@@ -98,6 +102,7 @@ class Tester:
             for idx, v in enumerate(value):
                 sample_str = self.video_name[:-4] + "_id{}_frame{}-{}".format(key, 30*idx, 30*(idx+1)-1)
                 res[sample_str] = v
+        print(res)
         return res
 
     def test(self):
@@ -135,30 +140,50 @@ class AutoTester:
         self.videos = [os.path.join(videos, v) for v in os.listdir(videos)]
         self.labels = [os.path.join(labels, l) for l in os.listdir(labels)]
         self.final_res = defaultdict(list)
+        self.model_name = []
 
     def __merge_dict(self, res):
-        for k, v in res:
-            self.final_res[k] = v
+        for k, v in res.items():
+            self.final_res[k].append(v)
+        print(self.final_res)
 
     def test(self):
         for model in self.models:
             model_res = defaultdict()
+            self.model_name.append(model.split("\\")[-1])
             for v, l in zip(self.videos, self.labels):
-                print("Begin processing {}".format(v))
+                print("\nBegin processing {}".format(v))
                 res = Tester(model, v, l).test()
                 model_res.update(res)
+            print(model_res)
             self.__merge_dict(model_res)
-        return self.final_res
+        return self.final_res, self.model_name
+
+
+def write_result(result, model_name, out):
+    f = open(out, "w")
+    csv_writer = csv.writer(f)
+    out = ["model_name"]
+    for model in model_name:
+        out.append(model)
+    csv_writer.writerow(out)
+
+    for k, v in result.items():
+        out = [k]
+        for res in v:
+            out.append(res)
+        csv_writer.writerow(out)
+    f.close()
 
 
 if __name__ == '__main__':
-    # t = Tester("6_network/net_test/model/ConvLSTM_2020-03-09-17-28-39.pth", "tmp/v_1/video/50_Trim.mp4",
+    # t = Tester("tmp/models/TCN_2020-03-09-18-03-19.pth", "tmp/v_1/video/50_Trim.mp4",
     #            "tmp/v_1/label1/50_Trim.txt")
     # rslt = t.test()
     # print(rslt)
-    AT = AutoTester("tmp/test_v", "tmp/v2/video", "tmp/v2/label1")
-    res = AT.test()
-    print(res)
+    AT = AutoTester("tmp/models", "tmp/v_1/video", "tmp/v_1/label1")
+    test_result, model_name = AT.test()
+    write_result(test_result, model_name, "tmp/out.csv")
 
 
     # t.pred_dict["1"] = ["drown", "swim"]

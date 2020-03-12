@@ -98,7 +98,7 @@ class AutoLabel:
 
 
 if __name__ == '__main__':
-    video_s = "tmp/v2"
+    video_s = "tmp/v_1"
     label_name = "label1"
     os.makedirs(os.path.join(video_s, label_name), exist_ok=True)
     AL = AutoLabel(video_s, label_name)
