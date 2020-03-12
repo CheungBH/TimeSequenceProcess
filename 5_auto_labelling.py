@@ -1,5 +1,5 @@
 import cv2
-from src.human_detection import ImgProcessorNoPE as ImgProcessor
+from src.human_detection import ImgprocessorAllKPS as ImgProcessor
 from collections import defaultdict
 import os
 from config import config
@@ -21,6 +21,7 @@ class LabelVideo:
         self.label = defaultdict(list)
         self.cls = {str(idx): label for idx, label in enumerate(cls)}
         self.cls["p"] = "pass"
+        self.id_record = defaultdict(bool)
 
     def __put_cnt(self, img):
         for idx, (k, v) in enumerate(self.idbox_cnt.items()):
@@ -40,22 +41,25 @@ class LabelVideo:
             cnt = 0
             self.idbox_cnt = defaultdict(int)
             cap = cv2.VideoCapture(self.video_path)
+            recorded = True
             while True:
                 cnt += 1
                 ret, frame = cap.read()
                 if ret:
                     frame = cv2.resize(frame, store_size)
-                    img, id2bbox = IP.process_img(frame)
-                    img = cv2.resize(img, store_size)
-
-                    if id2bbox:
-                        for idx, (k, v) in enumerate(id2bbox.items()):
+                    kps, img = IP.process_img(frame)
+                    if kps:
+                        for idx, (k, v) in enumerate(kps.items()):
                             self.idbox_cnt[k] += 1
                         cv2.putText(img, "Frame cnt: {}".format(cnt), (300, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1)
                         self.__put_cnt(img)
 
-                        if self.idbox_cnt[num] % frame_length == 0 and self.idbox_cnt[num] != 0:
+                        if self.idbox_cnt[num] % frame_length == 0 and self.idbox_cnt[num] != 0 and recorded == False:
                             self.label[num].append(input("The label of id {} is: ".format(num)))
+                            recorded = True
+                        else:
+                            if self.idbox_cnt[num] % frame_length != 0:
+                                recorded = False
 
                     cv2.imshow("res", img)
                     cv2.waitKey(2)
