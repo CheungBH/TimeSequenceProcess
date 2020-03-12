@@ -9,18 +9,18 @@ frame_length = config.label_frame
 comment = config.label_comment
 
 IP = ImgProcessor()
-store_size = (540, 360)
+store_size = config.size
 
 
 class LabelVideo:
-    def __init__(self, video_path, id_ls, label_folder):
-        self.label_path = (video_path.replace("video", label_folder))[:-4] + ".txt"
+    def __init__(self, video_path, id_ls, label_path):
+        self.label_path = label_path
         self.id_ls = id_ls
-        self.cap = cv2.VideoCapture(video_path)
-        self.height, self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(
-            self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.video_path = video_path
         self.idbox_cnt = defaultdict(int)
         self.label = defaultdict(list)
+        self.cls = {str(idx): label for idx, label in enumerate(cls)}
+        self.cls["p"] = "pass"
 
     def __put_cnt(self, img):
         for idx, (k, v) in enumerate(self.idbox_cnt.items()):
@@ -30,17 +30,21 @@ class LabelVideo:
 
     def __write_label(self):
         with open(self.label_path, "w") as lf:
-            for item in self.label:
-                lf.write(item)
+            for k,v in self.label.items():
+                label = " ".join([self.cls[name] for name in v])
+                lf.write("{}:{}\n".format(k,label))
 
     def process(self):
-        cnt = 0
-        for id in self.id_ls:
+        for num in self.id_ls:
+            print("Begin processing id {}".format(num))
+            cnt = 0
+            self.idbox_cnt = defaultdict(int)
+            cap = cv2.VideoCapture(self.video_path)
             while True:
                 cnt += 1
-                # print("Current frame is {}".format(cnt))
-                ret, frame = self.cap.read()
+                ret, frame = cap.read()
                 if ret:
+                    frame = cv2.resize(frame, store_size)
                     img, id2bbox = IP.process_img(frame)
                     img = cv2.resize(img, store_size)
 
@@ -50,37 +54,48 @@ class LabelVideo:
                         cv2.putText(img, "Frame cnt: {}".format(cnt), (300, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1)
                         self.__put_cnt(img)
 
-                        if self.idbox_cnt[id] % frame_length == 0:
-                            self.label[id].append(input())
+                        if self.idbox_cnt[num] % frame_length == 0 and self.idbox_cnt[num] != 0:
+                            self.label[num].append(input("The label of id {} is: ".format(num)))
 
                     cv2.imshow("res", img)
                     cv2.waitKey(2)
 
                 else:
-                    self.cap.release()
-                    cv2.destroyAllWindows()
                     break
 
+            cap.release()
+            IP.init_sort()
+            cv2.destroyAllWindows()
+
         self.__write_label()
-        return self.label
 
 
 class AutoLabel:
-    def __init__(self, label_folder, video_src):
-        self.folder = label_folder
-        self.video_folder = video_src
-        os.makedirs(self.video_folder.replace("video", self.folder), exist_ok=True)
-        self.label_log = "/".join(self.video_folder.split("/")[:-1]) + "label_log.txt"
+    def __init__(self, video_src, label_folder):
+        self.video_ls = [os.path.join(video_src, "video", v_name) for v_name in os.listdir(os.path.join(video_src, "video"))]
+        self.label_ls = [video_path.replace("video", label_folder)[:-4] +".txt" for video_path in self.video_ls]
+        os.makedirs(video_src.replace("video", label_folder), exist_ok=True)
+        self.ids = []
+        self.label_log = os.path.join(video_src, "label_log.txt")
 
     def process(self):
+        for v, l in zip(self.video_ls, self.label_ls):
+            if os.path.exists(l):
+                print("{} has been processed!".format(v))
+                continue
+
+            LV = LabelVideo(v, [1,2], l)
+            print("Begin processing video {}".format(v))
+            LV.process()
+            print("Finish process\n")
+
         with open(self.label_log, "a+") as f:
             f.write(comment + "\n")
-        pass
 
 
 if __name__ == '__main__':
-    video = "7_test/test1/video/3c_Trim.mp4"
-    l_folder = "label_1"
-    os.makedirs("/".join(video.split("/")[:-2]) + l_folder)
-    label = LabelVideo(video, [1, 3], "label_1").process()
-    print(label)
+    video_s = "tmp/v2"
+    label_name = "label1"
+    os.makedirs(os.path.join(video_s, label_name), exist_ok=True)
+    AL = AutoLabel(video_s, label_name)
+    AL.process()

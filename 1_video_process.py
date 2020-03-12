@@ -1,10 +1,10 @@
 from src.human_detection import ImgProcessor
 import cv2
-from config.config import video_process_class
+from config.config import video_process_class, size
 import os
 
 IP = ImgProcessor()
-store_size = (540, 360)
+store_size = size
 
 
 class VideoProcessor:

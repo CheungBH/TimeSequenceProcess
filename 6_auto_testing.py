@@ -1,8 +1,8 @@
-from models.TCN.test_TCN import TCNPredictor
-from models.LSTM.test_LSTM import LSTMPredictor
+from src.TCN.test_TCN import TCNPredictor
+from src.LSTM.test_LSTM import LSTMPredictor
 import cv2
 from collections import defaultdict
-from models.ConvLSTM.test_ConvLstm import ConvLSTMPredictor
+from src.ConvLSTM.test_ConvLstm import ConvLSTMPredictor
 from src.human_detection import ImgprocessorAllKPS as ImgProcessor
 import numpy as np
 from config import config
@@ -17,17 +17,30 @@ label_folder = config.test_label_folder
 cls = ["swim", "drown"]
 seq_length = config.testing_frame
 IP = ImgProcessor()
-store_size = (540, 360)
+store_size = config.size
 
 
 class Tester:
     def __init__(self, model_name, video_path, label_path):
         self.tester = self.__get_tester(model_name)
+        self.video_name = video_path.split("/")[-1]
         self.cap = cv2.VideoCapture(video_path)
         self.height, self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.kps_dict = defaultdict(list)
+        self.label, self.test_id = self.get_label(label_path)
         self.coord = []
         self.pred = defaultdict(str)
+        self.pred_dict = defaultdict(list)
+        self.res = defaultdict(list)
+
+    def get_label(self, path):
+        with open(path, "r") as lf:
+            labels, ids = defaultdict(list), []
+            for line in lf.readlines():
+                [idx, label] = line[:-1].split(":")
+                labels[idx] = [l for l in label.split(" ")]
+                ids.append(idx)
+        return labels, ids
 
     def __normalize_coordinates(self, coordinates):
         for i in range(len(coordinates)):
@@ -51,6 +64,7 @@ class Tester:
             if len(v) == seq_length:
                 pred = self.tester.predict(np.array(v).astype(np.float32))
                 self.pred[k] = cls[pred]
+                self.pred_dict[str(k)].append(cls[pred])
                 print("Predicting id {}".format(k))
                 refresh_idx.append(k)
         for idx in refresh_idx:
@@ -67,13 +81,32 @@ class Tester:
                         (0, 255, 0), 2)
         return img
 
+    def __compare(self):
+        assert self.pred_dict.keys() == self.label.keys()
+        for k in self.pred_dict.keys():
+            label, pred = self.label[k], self.pred_dict[k]
+            assert len(label) == len(pred)
+            for l, p in zip(label, pred):
+                if p == "pass":
+                    self.res[k].append("pass")
+                self.res[k].append(l == p)
+        return self.__summarize()
+
+    def __summarize(self):
+        res = {}
+        for key, value in self.res.items():
+            for idx, v in enumerate(value):
+                sample_str = self.video_name[:-4] + "_id{}_frame{}-{}".format(key, 30*idx, 30*(idx+1)-1)
+                res[sample_str] = v
+        return res
+
     def test(self):
         cnt = 0
         while True:
             cnt += 1
-            # print("Current frame is {}".format(cnt))
             ret, frame = self.cap.read()
             if ret:
+                frame = cv2.resize(frame, store_size)
                 kps, img = IP.process_img(frame)
                 if kps:
                     for key in kps:
@@ -90,26 +123,43 @@ class Tester:
 
             else:
                 self.cap.release()
+                IP.init_sort()
                 cv2.destroyAllWindows()
                 break
+        return self.__compare()
 
 
 class AutoTester:
-    def __init__(self, models, videos, labels, res):
+    def __init__(self, models, videos, labels):
         self.models = [os.path.join(models, m) for m in os.listdir(models)]
         self.videos = [os.path.join(videos, v) for v in os.listdir(videos)]
         self.labels = [os.path.join(labels, l) for l in os.listdir(labels)]
-        self.result_folder = res
+        self.final_res = defaultdict(list)
+
+    def __merge_dict(self, res):
+        for k, v in res:
+            self.final_res[k] = v
 
     def test(self):
         for model in self.models:
-
+            model_res = defaultdict()
             for v, l in zip(self.videos, self.labels):
-                Tester(model, v, l)
-
-
+                print("Begin processing {}".format(v))
+                res = Tester(model, v, l).test()
+                model_res.update(res)
+            self.__merge_dict(model_res)
+        return self.final_res
 
 
 if __name__ == '__main__':
-    video = "1_video/test/others/1_Trim.mp4"
-    Tester(model_path, video).test()
+    # t = Tester("6_network/net_test/model/ConvLSTM_2020-03-09-17-28-39.pth", "tmp/v_1/video/50_Trim.mp4",
+    #            "tmp/v_1/label1/50_Trim.txt")
+    # rslt = t.test()
+    # print(rslt)
+    AT = AutoTester("tmp/test_v", "tmp/v2/video", "tmp/v2/label1")
+    res = AT.test()
+    print(res)
+
+
+    # t.pred_dict["1"] = ["drown", "swim"]
+    # t.pred_dict["2"] = ["drown"]

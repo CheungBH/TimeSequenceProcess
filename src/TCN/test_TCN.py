@@ -1,7 +1,6 @@
 import torch
 import sys
 sys.path.append("../../")
-from models.TCN.src.model import TCN
 import numpy as np
 from config import config
 
@@ -9,8 +8,7 @@ from config import config
 class TCNPredictor(object):
     def __init__(self, model):
         # self.input_data = np.loadtxt(data_pth).astype(np.float32).reshape(-1,34)#(seq_l, 34)
-        self.model_pth = model
-        self.model = torch.load(self.model_pth)
+        self.model = torch.load(model)
         self.model.eval()
 
     def get_input_data(self, input_data):

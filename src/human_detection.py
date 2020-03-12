@@ -116,6 +116,7 @@ class ImgProcessorNoPE(object):
 
     def init_sort(self):
         self.object_tracker.init_KF()
+        self.object_tracker = Sort()
 
     def __process_tracked_box(self, bbox):
         box_dict = {int(item[4]): item[:4] for item in bbox}
@@ -133,15 +134,4 @@ class ImgProcessorNoPE(object):
                 return img, id2bbox
             else:
                 return frame, {}
-
-#
-# class ImgprocessorAllKPS(ImgProcessor):
-#     def __init__(self):
-#         super().__init__()
-#         super().init_sort()
-#         super().process_img(frame)
-#
-#
-#     def __choose_kps(self, id2ske, get_id):
-#         return id2ske
 

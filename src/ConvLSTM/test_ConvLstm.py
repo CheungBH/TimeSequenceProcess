@@ -1,7 +1,7 @@
 import torch
 import sys
 sys.path.append("../../")
-from models.ConvLSTM.model import ConvLSTM
+from src.ConvLSTM.model import ConvLSTM
 import numpy as np
 from config import config
 
