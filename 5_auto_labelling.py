@@ -55,12 +55,13 @@ class LabelVideo:
                             self.idbox_cnt[k] += 1
                         self.__put_cnt(img)
 
-                        if self.idbox_cnt[num] % frame_length == 0 and self.idbox_cnt[num] != 0 and recorded == False:
-                            self.label[num].append(input("The label of id {} is: ".format(num)))
-                            recorded = True
-                        else:
-                            if self.idbox_cnt[num] % frame_length != 0:
-                                recorded = False
+                        if num in kps.keys():
+                            if self.idbox_cnt[num] % frame_length == 0 and self.idbox_cnt[num] != 0 and recorded == False:
+                                self.label[num].append(input("The label of id {} is: ".format(num)))
+                                recorded = True
+                            else:
+                                if self.idbox_cnt[num] % frame_length != 0:
+                                    recorded = False
 
                     cv2.imshow("res", img)
                     cv2.waitKey(2)
