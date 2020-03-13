@@ -7,10 +7,13 @@ import shutil
 import os
 
 res_dest = config.out_dest
+src_data_path = config.train_data_path
 #if os.path.exists(res_dest): raise ValueError("The destination path '{}' exists!".format(res_dest))
 os.makedirs(os.path.join(res_dest, "model"), exist_ok=True)
 os.makedirs(os.path.join(res_dest, "log"), exist_ok=True)
-n_classes = len(config.training_labels)
+# n_classes = len(config.training_labels)
+with open(os.path.join(src_data_path, "cls.txt"), "r") as cls_file:
+    n_classes = len(cls_file.readlines())
 
 
 if __name__ == '__main__':
@@ -18,8 +21,8 @@ if __name__ == '__main__':
         assert n in ['LSTM', "TCN", "ConvLSTM"], "Wrong model name, please check"
 
     res = open(os.path.join(res_dest, "result.txt"), "w")
-    shutil.copy(os.path.join(config.data_path, "cls.txt"), res_dest)
-    with open(os.path.join(res_dest, "cls.txt"), "a+") as f:
+    shutil.copy(os.path.join(src_data_path, "cls.txt"), res_dest)
+    with open(os.path.join("6_network", "description.txt"), "a+") as f:
         f.write("\n" + config.data_info)
     res.write("model_name, model_type, epochs, dropout, learning-rate, structure_num, min_train_loss, min_val_loss,"
               "max_val_acc\n")
@@ -42,7 +45,7 @@ if __name__ == '__main__':
                             if net == "TCN":
                                 log_name = os.path.join(res_dest, "log", net_string + ".txt")
                                 model_name = os.path.join(res_dest, "model", net_string + ".pth")
-                                train_loss, val_loss, val_acc = TCNTrainer(config.data_path, epoch, dropout, lr, model_name,
+                                train_loss, val_loss, val_acc = TCNTrainer(src_data_path, epoch, dropout, lr, model_name,
                                                                   log_name, batch_size, n_classes, num).train_tcn()
 
                             elif net == "LSTM":
@@ -50,20 +53,22 @@ if __name__ == '__main__':
                                 model_name = os.path.join(res_dest, "model", net_string + ".h5")
                                 os.makedirs(os.path.join(res_dest, "LSTM_graph/loss"), exist_ok=True)
                                 os.makedirs(os.path.join(res_dest, "LSTM_graph/acc"), exist_ok=True)
-                                train_loss, val_loss, val_acc = LSTMTrainer(config.data_path, epoch, dropout, lr, model_name,
+                                train_loss, val_loss, val_acc = LSTMTrainer(src_data_path, epoch, dropout, lr, model_name,
                                             log_name, batch_size, n_classes, num).train_LSTM()
 
                             elif net == "ConvLSTM":
                                 log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")
                                 model_name = os.path.join(res_dest, "model", net_string + ".pth")
-                                train_loss, val_loss, val_acc = ConvLSTMTrainer(config.data_path, epoch, dropout, lr, model_name,
+                                train_loss, val_loss, val_acc = ConvLSTMTrainer(src_data_path, epoch, dropout, lr, model_name,
                                                             log_name, batch_size, n_classes, num).train_convlstm()
 
                             else:
                                 raise ValueError("Wrong model type")
 
                             cost = time.time() - begin_time
-                            print("Total time cost is {}s\n".format(cost))
+                            with open(log_name, "a+") as log:
+                                print("Total time cost is {}s\n".format(cost))
+                                log.write("\nTotal time cost is {}s\n".format(cost))
                             res.write("{},{},{},{},{},{}, {},{},{}\n".format(
                                 net_string + ".pth", net, epoch, dropout, lr, num, train_loss, val_loss, val_acc))
                         except:

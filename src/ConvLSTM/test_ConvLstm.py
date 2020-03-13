@@ -7,25 +7,27 @@ import os
 from config import config
 
 device = config.device
-params_ls = config.ConvLSTM_structure
+ConvLSTM_params = config.ConvLSTM_structure
+kps_num = config.test_kps_num
 
 
 class ConvLSTMPredictor(object):
-    def __init__(self, model_name):
+    def __init__(self, model_name, n_classes):
         # self.input_data = np.loadtxt(data_pth).astype(np.float32).reshape(-1,1,17,2)#(seq_l, 1, 17, 2)
         structure_num = int(model_name.split('_')[1][6:])
-        self.model = ConvLSTM(input_size=(17, 2),
+        [hidden_channel, kernel_size, attention] = ConvLSTM_params[structure_num]
+        self.model = ConvLSTM(input_size=(int(kps_num/2), 2),
                              input_dim=1,
-                             hidden_dim=params_ls[structure_num][0],
-                             kernel_size=params_ls[structure_num][1],
-                             num_layers=len(params_ls[structure_num][0]),
-                             num_classes=2,
+                             hidden_dim=hidden_channel,
+                             kernel_size=kernel_size,
+                             num_layers=len(hidden_channel),
+                             num_classes=n_classes,
                              batch_size=2,
                              batch_first=True,
                              bias=True,
                              return_all_layers=False,
-                             attention=params_ls[structure_num][2])
-        self.model.load_state_dict(torch.load(model_name, map_location=device))
+                             attention=attention)
+        self.model.load_state_dict(torch.load(model_name))
         if device != "cpu":
             self.model.cuda()
         self.model.eval()
@@ -48,7 +50,7 @@ if __name__ == '__main__':
     model = 'ConvLSTM_struct2_10-10-10-10-10-99.pth'
     input_pth = 'data.txt'
     inp = np.loadtxt(input_pth).astype(np.float32).reshape(-1,1,17,2)
-    prediction = ConvLSTMPredictor(model)
+    prediction = ConvLSTMPredictor(model, 2)
     res = prediction.predict(inp)
     print(res)
 

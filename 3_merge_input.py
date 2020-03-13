@@ -18,9 +18,9 @@ class InputMerger:
         os.makedirs(self.dest_folder)
         self.data = open(os.path.join(self.dest_folder, "data.txt"), "w")
         self.label = open(os.path.join(self.dest_folder, "label.txt"), "w")
-        self.cls = open(os.path.join(self.dest_folder, "cls.txt"), "w")
-        for idx, cls in enumerate(merge_class):
-            self.cls.write("{}:{}\t".format(idx, cls))
+        with open(os.path.join(self.dest_folder, "cls.txt"), "w") as f:
+            for cls in merge_class:
+                f.write(cls)
 
     def __merge_cls_input(self, label, data):
         for out in data:
@@ -39,7 +39,6 @@ class InputMerger:
         self.description.write(comment + '\n')
         self.data.close()
         self.label.close()
-        self.cls.close()
         self.description.close()
 
 

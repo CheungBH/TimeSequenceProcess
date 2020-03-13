@@ -83,7 +83,7 @@ merge_comment = "Inpute test: swim, test100, test101, all samples, 30f, 10s"
 
 
 # Auto training config
-data_path = '5_input/input1/'
+train_data_path = '5_input/input1/'
 networks = ["LSTM"]
 
 epoch_ls = {"LSTM": [200, 500, 1000],

@@ -6,17 +6,20 @@ import numpy as np
 from config import config
 
 device = config.device
-params_ls = config.TCN_structure
+TCN_params = config.TCN_structure
+kps_num = config.test_kps_num
 
 
 class TCNPredictor:
-    def __init__(self, model_name):
+    def __init__(self, model_name, n_classes):
         structure_num = int(model_name.split('_')[1][6:])
-        self.model = TCN(input_size=34,
-                         output_size=2,
-                         num_channels= params_ls[structure_num][0],
-                         kernel_size=params_ls[structure_num][1],
-                         dropout=0)
+        [channel_size, kernel_size, dilation] = TCN_params[structure_num]
+        self.model = TCN(input_size=kps_num,
+                         output_size=n_classes,
+                         num_channels= channel_size,
+                         kernel_size=kernel_size,
+                         dropout=0,
+                         dilation=dilation)
         self.model.load_state_dict(torch.load(model_name, map_location=device))
         if device != "cpu":
             self.model.cuda()
@@ -41,6 +44,6 @@ if __name__ == '__main__':
     model_pth = 'TCN_struct1_10-10-10-10-10-10.pth'
     input_pth = 'data.txt'
     inp = np.loadtxt(input_pth).astype(np.float32).reshape(-1,34)
-    prediction = TCNPredictor(model_pth)
+    prediction = TCNPredictor(model_pth, 2)
     res = prediction.predict(inp)
     print(res)

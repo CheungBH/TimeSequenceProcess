@@ -1,8 +1,8 @@
-from src.TCN.test_TCN import TCNPredictor
+from models.TCN.test_TCN import TCNPredictor
 from src.LSTM.test_LSTM import LSTMPredictor
 import cv2
 from collections import defaultdict
-from src.ConvLSTM.test_ConvLstm import ConvLSTMPredictor
+from models.ConvLSTM.test_ConvLstm import ConvLSTMPredictor
 from src.human_detection import ImgprocessorAllKPS as ImgProcessor
 import numpy as np
 from config import config
@@ -14,7 +14,10 @@ video_folder = config.test_video_folder
 result_folder = config.test_res_folder
 label_folder = config.test_label_folder
 
+# with open(os.path.join("/".join(model_folder.split("/")[:-1]), "cls.txt"), "r") as cls_file:
+#     cls = [line for line in cls_file.readlines()]
 cls = ["swim", "drown"]
+
 seq_length = config.testing_frame
 IP = ImgProcessor()
 store_size = config.size
@@ -31,7 +34,7 @@ class Tester:
         self.coord = []
         self.pred = defaultdict(str)
         self.pred_dict = defaultdict(list)
-        self.res = defaultdict(list)
+        self.res = defaultdict(bool)
 
     def __get_label(self, path):
         with open(path, "r") as lf:
@@ -52,11 +55,11 @@ class Tester:
 
     def __get_tester(self, model):
         if "ConvLSTM" in model:
-            return ConvLSTMPredictor(model)
+            return ConvLSTMPredictor(model, len(cls))
         if 'LSTM' in model:
             return LSTMPredictor(model)
         if "TCN" in model:
-            return TCNPredictor(model)
+            return TCNPredictor(model, len(cls))
 
     def __detect_kps(self):
         refresh_idx = []
@@ -90,20 +93,10 @@ class Tester:
         for k in self.pred_dict.keys():
             label, pred = self.label[k], self.pred_dict[k]
             assert len(label) == len(pred)
-            for l, p in zip(label, pred):
-                if l == "pass":
-                    self.res[k].append("pass")
-                self.res[k].append(l == p)
-        return self.__summarize()
-
-    def __summarize(self):
-        res = {}
-        for key, value in self.res.items():
-            for idx, v in enumerate(value):
-                sample_str = self.video_name[:-4] + "_id{}_frame{}-{}".format(key, 30*idx, 30*(idx+1)-1)
-                res[sample_str] = v
-        print(res)
-        return res
+            for idx, (l, p) in enumerate(zip(label, pred)):
+                if l != "pass":
+                    sample_str = self.video_name[:-4] + "_id{}_frame{}-{}".format(k, 30 * idx, 30 * (idx + 1) - 1)
+                    self.res[sample_str]= l == p
 
     def test(self):
         cnt = 0
@@ -131,7 +124,8 @@ class Tester:
                 IP.init_sort()
                 cv2.destroyAllWindows()
                 break
-        return self.__compare()
+        self.__compare()
+        return self.res
 
 
 class AutoTester:
@@ -177,7 +171,7 @@ def write_result(result, model_name, out):
 
 
 if __name__ == '__main__':
-    # t = Tester("tmp/models/TCN_2020-03-09-18-03-19.pth", "tmp/v_1/video/50_Trim.mp4",
+    # t = Tester("tmp/models/TCN_struct1_2020-03-09-18-03-19.pth", "tmp/v_1/video/50_Trim.mp4",
     #            "tmp/v_1/label1/50_Trim.txt")
     # rslt = t.test()
     # print(rslt)
