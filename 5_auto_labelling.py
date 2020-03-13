@@ -48,10 +48,11 @@ class LabelVideo:
                 if ret:
                     frame = cv2.resize(frame, store_size)
                     kps, img = IP.process_img(frame)
+                    cv2.putText(img, "Frame cnt: {}".format(cnt), (300, 30), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                                (255, 255, 255), 1)
                     if kps:
                         for idx, (k, v) in enumerate(kps.items()):
                             self.idbox_cnt[k] += 1
-                        cv2.putText(img, "Frame cnt: {}".format(cnt), (300, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1)
                         self.__put_cnt(img)
 
                         if self.idbox_cnt[num] % frame_length == 0 and self.idbox_cnt[num] != 0 and recorded == False:
@@ -98,8 +99,8 @@ class AutoLabel:
 
 
 if __name__ == '__main__':
-    video_s = "tmp/v_1"
-    label_name = "label1"
+    video_s = "tmp/v2"
+    label_name = "label2"
     os.makedirs(os.path.join(video_s, label_name), exist_ok=True)
     AL = AutoLabel(video_s, label_name)
     AL.process()

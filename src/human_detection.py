@@ -85,7 +85,7 @@ class ImgprocessorAllKPS:
                 img = self.BBV.visualize(boxes, img)
                 if key_points:
                     id2ske, id2bbox = self.object_tracker.track(boxes, key_points)
-                    img = self.IDV.plot_bbox_id(id2bbox, copy.deepcopy(img))
+                    img = self.IDV.plot_skeleton_id(id2ske, copy.deepcopy(img))
                     try:
                         kps = self.__choose_kps(id2ske, get_id)
                         # kps = self.__process_kp(id2ske[get_id])

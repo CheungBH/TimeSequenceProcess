@@ -23,8 +23,8 @@ class IDVisualizer(object):
         for idx in range(len(id2ske)):
             # [x, y] = torch.mean(list(id2ske.values())[idx], dim=0)
             ske = list(id2ske.values())[idx]
-            x = int(np.mean([ske[i] for i in range(len(ske)) if i % 2 == 0]))
-            y = int(np.mean([ske[i] for i in range(len(ske)) if i % 2 != 0]))
+            x = int(np.mean([ske[i][0] for i in range(len(ske))]))
+            y = int(np.mean([ske[i][1] for i in range(len(ske))]))
             cv2.putText(img, "id{}".format(list(id2ske.keys())[idx]), (x, y), cv2.FONT_HERSHEY_PLAIN, 2, self.skeid_color,
                         2)
         return img
