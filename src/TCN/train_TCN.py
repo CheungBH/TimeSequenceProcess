@@ -27,8 +27,9 @@ class TCNTrainer:
     def __init__(self, data_path, epoch, dropout, lr, model_name, log_name, batch_size, n_classes, struct_num):
         self.epoch = epoch
         self.batch_size = batch_size
-        self.model = TCN(input_channels, n_classes, TCN_params[struct_num][0],
-                         kernel_size=TCN_params[struct_num][1], dropout=dropout)
+        [channel_size, kernel_size, dilation] = TCN_params[struct_num]
+        self.model = TCN(input_channels, n_classes, channel_size,
+                         kernel_size=kernel_size, dropout=dropout, dilation=dilation)
         if device != "cpu":
             self.model.cuda()
             permute.cuda()

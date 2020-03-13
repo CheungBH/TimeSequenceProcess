@@ -14,11 +14,15 @@ n_classes = len(config.training_labels)
 
 
 if __name__ == '__main__':
+    for n in config.networks:
+        assert n in ['LSTM', "TCN", "ConvLSTM"], "Wrong model name, please check"
+
     res = open(os.path.join(res_dest, "result.txt"), "w")
     shutil.copy(os.path.join(config.data_path, "cls.txt"), res_dest)
     with open(os.path.join(res_dest, "cls.txt"), "a+") as f:
         f.write("\n" + config.data_info)
-    res.write("model_name,model_type,epochs,dropout,learning-rate,structure_num,min_train_loss,min_val_loss,max_val_acc\n")
+    res.write("model_name, model_type, epochs, dropout, learning-rate, structure_num, min_train_loss, min_val_loss,"
+              "max_val_acc\n")
 
     cnt = 0
     for net in config.networks:

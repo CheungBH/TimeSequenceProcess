@@ -20,9 +20,9 @@ pose_batch = 80
 
 
 # TCN structure
-TCN_structure = {1:[[6, 6, 6, 6], 5],
+TCN_structure = {1:[[6, 6, 6, 6], 5, 2],
                  # [channel_size, kernel_size]
-                 2: [[3, 4, 5, 6], 5]
+                 2: [[3, 4, 5, 6], 5, 4]
                  }
 
 
@@ -64,10 +64,10 @@ merge_comment = "Inpute test: swim, test100, test101, all samples, 30f, 10s"
 
 # Auto training config
 data_path = '5_input/input1/'
-networks = ["LSTM"]
+networks = ["TCN", "ConvLSTM"]
 
 epoch_ls = {"LSTM": [2, 3],
-            "TCN": [5, 10, 8],
+            "TCN": [5],
             "ConvLSTM": [2]}
 dropout_ls = {"LSTM": [0.2],
               "TCN": [0.05, 0.1],
@@ -76,7 +76,7 @@ lr_ls = {"LSTM": [1e-4],
          "TCN": [1e-4],
          "ConvLSTM": [1e-4]}
 structure_ls = {
-    "ConvLSTM": [1,3],
+    "ConvLSTM": [3],
     "LSTM": [1,2],
     "TCN": [2,1]
 }
@@ -88,7 +88,7 @@ log_interval = 5
 training_labels = {0:"swim", 1:"drown"}
 
 data_info = "The data comes from input1"
-out_dest = "tmp/LSTMnet2"
+out_dest = "tmp/net9"
 
 
 

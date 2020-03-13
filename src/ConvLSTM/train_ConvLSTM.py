@@ -30,17 +30,18 @@ class ConvLSTMTrainer:
     def __init__(self, data_path, epoch, dropout, lr, model_name, log_name, batch_size, n_classes, struct_num):
         self.batch_size = batch_size
         self.epoch = epoch
+        [hidden_channel, kernel_size, attention] = ConvLSTM_params[struct_num]
         self.model = ConvLSTM(input_size=(int(input_channels/2), 2),
                          input_dim=1,
-                         hidden_dim=ConvLSTM_params[struct_num][0],
-                         kernel_size=ConvLSTM_params[struct_num][1],
-                         num_layers=len(ConvLSTM_params[struct_num][0]),
+                         hidden_dim=hidden_channel,
+                         kernel_size=kernel_size,
+                         num_layers=len(hidden_channel),
                          num_classes=n_classes,
                          batch_size=batch_size,
                          batch_first=True,
                          bias=True,
                          return_all_layers=False,
-                              attention=ConvLSTM_params[struct_num][2])
+                         attention=attention)
         if device != "cpu":
             self.model.cuda()
         self.name = model_name
