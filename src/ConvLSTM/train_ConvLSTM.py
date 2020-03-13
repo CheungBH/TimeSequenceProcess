@@ -11,17 +11,15 @@ sys.path.append("../../")
 import numpy as np
 import os
 
+
 input_channels = config.kps_num
 seq_length = config.training_frame
 log_interval = config.log_interval
+ConvLSTM_params = config.ConvLSTM_structure
+device = config.device
 
-kernel_size = (7, 7)
-levels = 4
-hidden_channels = [128, 64, 64, 32, 32]
-channel_sizes = [6, 6, 6, 6]
-
-device = "cuda:0"
 steps = 0
+
 
 permute = torch.Tensor(np.random.permutation(360).astype(np.float64)).long()
 permute.cuda()
@@ -29,20 +27,22 @@ torch.manual_seed(1111)
 
 
 class ConvLSTMTrainer:
-    def __init__(self, data_path, epoch, dropout, lr, model_name, log_name, batch_size, n_classes):
+    def __init__(self, data_path, epoch, dropout, lr, model_name, log_name, batch_size, n_classes, struct_num):
         self.batch_size = batch_size
         self.epoch = epoch
-        self.model = ConvLSTM(input_size=(17, 2),
+        self.model = ConvLSTM(input_size=(int(input_channels/2), 2),
                          input_dim=1,
-                         hidden_dim=hidden_channels,
-                         kernel_size=kernel_size,
-                         num_layers=len(hidden_channels),
-                         num_classes=2,
+                         hidden_dim=ConvLSTM_params[struct_num][0],
+                         kernel_size=ConvLSTM_params[struct_num][1],
+                         num_layers=len(ConvLSTM_params[struct_num][0]),
+                         num_classes=n_classes,
                          batch_size=batch_size,
                          batch_first=True,
                          bias=True,
-                         return_all_layers=False).cuda()
-        self.model.cuda()
+                         return_all_layers=False,
+                              attention=ConvLSTM_params[struct_num][2])
+        if device != "cpu":
+            self.model.cuda()
         self.name = model_name
         self.log = open(log_name, "w")
         self.criterion = nn.CrossEntropyLoss().to(device)
@@ -140,10 +140,11 @@ class ConvLSTMTrainer:
             val_loss, val_acc = self.__test()
             if val_loss < min_val_loss:
                 min_val_loss = val_loss
-                torch.save(self.model, self.name)
+                torch.save(self.model.state_dict(), self.name)
             max_val_acc = max(max_val_acc, val_acc)
         return min_train_loss, min_val_loss, max_val_acc
 
 
 if __name__ == '__main__':
-    ConvLSTMTrainer("../../5_input/input1", 100, 0.05, 1e-4, "wtf.pth", "wtf.txt", 32, 2).train_convlstm()
+    ConvLSTMTrainer("../../5_input/input1", 3, 0.05, 1e-4, "ConvLSTM_struct1_10-10-10-10-10-99.pth",
+                    "wtf.txt", 32, 2, 2).train_convlstm()

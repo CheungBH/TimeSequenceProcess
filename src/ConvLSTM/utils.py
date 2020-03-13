@@ -4,6 +4,10 @@ import numpy as np
 from torch import nn
 import torch.utils.data as data
 from torch.utils.data import DataLoader
+from config import config
+
+kps = config.kps_num
+frm = config.training_frame
 
 
 class ConvLstmLoader(data.Dataset):
@@ -24,7 +28,7 @@ class ConvLstmLoader(data.Dataset):
         return len(self.datas)
     
     def __getitem__(self, idx):
-        keypoint = np.asarray(self.datas[idx]).astype(np.float32).reshape(30,17,2)#[30*34]#.reshape(-1,1,17,2)
+        keypoint = np.asarray(self.datas[idx]).astype(np.float32).reshape(frm, int(kps/2), 2)#[30*34]#.reshape(-1,1,17,2)
         # keypoint = keypoint[:,np.newaxis]#[30*34,1]
         keypoint = torch.from_numpy(keypoint).unsqueeze(1)
         one_hot_label = self.get_one_hot_num(self.labels[idx])

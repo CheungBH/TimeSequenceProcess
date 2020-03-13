@@ -3,6 +3,29 @@ import torch.nn as nn
 from torch.autograd import Variable
 import torch.nn.functional as F
 
+class SelfAttention(nn.Module):
+    def __init__(self, hidden_dim, height, width):
+        super().__init__()
+        self.hidden_dim = hidden_dim
+        self.height = height
+        self.width = width
+        self.projection = nn.Sequential(
+            nn.Linear(hidden_dim*self.height*self.width, 64),
+            nn.ReLU(True),
+            nn.Linear(64, 1)
+        )
+
+    def forward(self, encoder_outputs):
+        batch_size = encoder_outputs.size(0)
+        #print(batch_size)
+        energy = self.projection(encoder_outputs)
+        #print(energy.shape)
+        weights = F.softmax(energy.squeeze(-1), dim=1)
+        #print(weights.shape)
+        outputs = (encoder_outputs * weights.unsqueeze(-1)).sum(dim=1)
+        return outputs, weights
+
+
 class ConvLSTMCell(nn.Module):
 
     def __init__(self, input_size, input_dim, hidden_dim, kernel_size, bias):
@@ -64,7 +87,7 @@ class ConvLSTMCell(nn.Module):
 
 class ConvLSTM(nn.Module):
 
-    def __init__(self, input_size, input_dim, hidden_dim, kernel_size, num_layers, num_classes, batch_first=False, bias=True, return_all_layers=False, batch_size=1):
+    def __init__(self, input_size, input_dim, hidden_dim, kernel_size, num_layers, num_classes, batch_first=False, bias=True, return_all_layers=False, batch_size=1, attention = None):
         super(ConvLSTM, self).__init__()
 
         self._check_kernel_size_consistency(kernel_size)
@@ -86,6 +109,7 @@ class ConvLSTM(nn.Module):
         self.batch_first = batch_first
         self.bias = bias
         self.return_all_layers = return_all_layers
+        self.attention = attention
         
 
         cell_list = []
@@ -99,6 +123,7 @@ class ConvLSTM(nn.Module):
                                           bias=self.bias))
 
         self.cell_list = nn.ModuleList(cell_list)
+        self.attention_layer = SelfAttention(hidden_dim[-1], self.height, self.width)
         self.output_layer = nn.Sequential(nn.Linear(self.hidden_dim[-1]*self.height*self.width, self.hidden_dim[-1]),
             nn.BatchNorm1d(self.hidden_dim[-1]),
             nn.ReLU(),
@@ -158,10 +183,20 @@ class ConvLSTM(nn.Module):
             last_state_list   = last_state_list[-1:]
         
         x = layer_output_list[0][:,-1,:,:,:]
+        final_hidden_state = last_state_list[0][0]
+        #print('final_hidden_state shape ', final_hidden_state.shape)
+        if self.attention:
+            x = x.view(x.size(0),-1).unsqueeze(1)
         #print(x.shape)
-        x = x.view(x.size(0), -1)
-        #print(x.shape)
-        return self.output_layer(x)
+            embedding, attn_weights = self.attention_layer(x)
+            output = self.output_layer(embedding)
+        #x = self.output_layer(x)
+            return output
+        else:
+            x = x.view(x.size(0),-1)
+            return self.output_layer(x)
+
+
 
     def _init_hidden(self, batch_size):
         init_states = []
@@ -191,7 +226,8 @@ if __name__ == '__main__':
                  batch_size=2,
                  batch_first=True,
                  bias=True,
-                 return_all_layers=False).cuda()
+                 return_all_layers=False,
+                 attention=False).cuda()
 
     input_tensor = torch.randn(2,30,1,17,2).cuda()
     target = torch.randn(2,30,32,17,2).cuda()

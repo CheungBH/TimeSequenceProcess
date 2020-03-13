@@ -19,7 +19,23 @@ fast_inference = True
 pose_batch = 80
 
 
+# TCN structure
+TCN_structure = {1:[[6, 6, 6, 6], 5],
+                 # [channel_size, kernel_size]
+                 2: [[3, 4, 5, 6], 5]
+                 }
 
+
+# ConvLSTM structure
+ConvLSTM_structure = {1:[[128, 64, 64, 32, 32], (7, 7), False],
+                      # [hidden_channels, kernel_size, attention]
+                      2:[[128, 64, 64, 32, 32], (7, 7), True],
+                      3:[[128, 64, 64, 64, 32], (5, 5), True]
+                      }
+
+
+# LSTM structure
+LSTM_structure = {1: []}
 
 # Video process
 video_process_class = ["drown", "swim"]
@@ -46,26 +62,31 @@ merge_comment = "Inpute test: swim, test100, test101, all samples, 30f, 10s"
 
 # Auto training config
 data_path = '5_input/input1/'
-networks = ["ConvLSTM", "LSTM", "TCN"]
+networks = ["ConvLSTM", "TCN"]
 
-epoch_ls = {"LSTM": [100, 200],
-            "TCN": [100, 200, 300],
-            "ConvLSTM": [20]}
+epoch_ls = {"LSTM": [2, 3],
+            "TCN": [5, 10, 8],
+            "ConvLSTM": [2]}
 dropout_ls = {"LSTM": [0.2, 0.4],
               "TCN": [0.05, 0.1],
               "ConvLSTM": [""]}  # ConvLSTM don't have any dropouts
 lr_ls = {"LSTM": [1e-4],
          "TCN": [1e-4],
          "ConvLSTM": [1e-4]}
-batch_size = {"LSTM": 128, "TCN": 128, "ConvLSTM": 32}
+structure_ls = {
+    "ConvLSTM": [1,3],
+    "LSTM": [1,3],
+    "TCN": [2,1]
+}
 
+batch_size = {"LSTM": 128, "TCN": 128, "ConvLSTM": 32}
 kps_num = 34
 training_frame = 30
 log_interval = 5
 training_labels = {0:"swim", 1:"drown"}
 
 data_info = "The data comes from input1"
-out_dest = "6_network/net_test"
+out_dest = "6_network/net2"
 
 
 

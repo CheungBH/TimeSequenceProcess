@@ -2,10 +2,12 @@ import torch
 from torch.utils.data import DataLoader
 import torch.optim as optim
 import torch.nn as nn
-from src.TCN.src.utils import TCNLoader
-from src.TCN.src.model import TCN
+from src.TCN.TCNsrc.utils import TCNLoader
+from src.TCN.TCNsrc.model import TCN
 import numpy as np
 import os
+import sys
+sys.path.append("../../")
 from sklearn.model_selection import train_test_split
 from config import config
 
@@ -13,23 +15,23 @@ from config import config
 input_channels = config.kps_num
 log_interval = config.log_interval
 seq_length = config.training_frame
-
-device = "cuda:0"
+device = config.device
 steps = 0
+TCN_params = config.TCN_structure
 
 permute = torch.Tensor(np.random.permutation(360).astype(np.float64)).long()
-permute.cuda()
-channel_sizes = [6, 6, 6, 6]
-kernel_size = 5
 torch.manual_seed(1111)
 
 
 class TCNTrainer:
-    def __init__(self, data_path, epoch, dropout, lr, model_name, log_name, batch_size, n_classes):
+    def __init__(self, data_path, epoch, dropout, lr, model_name, log_name, batch_size, n_classes, struct_num):
         self.epoch = epoch
         self.batch_size = batch_size
-        self.model = TCN(input_channels, n_classes, channel_sizes, kernel_size=kernel_size, dropout=dropout)
-        self.model.cuda()
+        self.model = TCN(input_channels, n_classes, TCN_params[struct_num][0],
+                         kernel_size=TCN_params[struct_num][1], dropout=dropout)
+        if device != "cpu":
+            self.model.cuda()
+            permute.cuda()
         self.name = model_name
         self.log = open(log_name, "w")
         self.criterion = nn.NLLLoss().to(device)
@@ -132,10 +134,10 @@ class TCNTrainer:
             val_loss, val_acc = self.__test()
             if val_loss < min_val_loss:
                 min_val_loss = val_loss
-                torch.save(self.model, self.name)
+                torch.save(self.model.state_dict(), self.name)
             max_val_acc = max(max_val_acc, val_acc)
         return min_train_loss, min_val_loss, max_val_acc
 
 
 if __name__ == '__main__':
-    TCNTrainer("../../tmp/input1", 1000, 0.05, 1e-4, "wtf.pth", "wtf.txt", 32, 2).train_tcn()
+    TCNTrainer("../../tmp/input1", 30, 0.05, 1e-4, "TCN_struct1_10-10-10-10-10-10.pth", "wtf.txt", 32, 2, 1).train_tcn()
