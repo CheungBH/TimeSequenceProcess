@@ -22,7 +22,8 @@ pose_batch = 80
 # TCN structure
 TCN_structure = {1:[[6, 6, 6, 6], 5, 2],
                  # [channel_size, kernel_size]
-                 2: [[3, 4, 5, 6], 5, 4]
+                 2: [[3, 4, 5, 6], 5, 4],
+                 3: [[6, 6, 6, 6], 7, 2]
                  }
 
 
@@ -30,13 +31,14 @@ TCN_structure = {1:[[6, 6, 6, 6], 5, 2],
 ConvLSTM_structure = {1:[[128, 64, 64, 32, 32], (7, 7), False],
                       # [hidden_channels, kernel_size, attention]
                       2:[[128, 64, 64, 32, 32], (7, 7), True],
-                      3:[[128, 64, 64, 64, 32], (5, 5), True]
+                      3:[[128, 64, 64, 64, 32], (5, 5), True],
                       }
 
 
 # LSTM structure
 LSTM_structure = {1: [[128, 128], [64, 16]],
-                  2: [[128, 128, 128], [64, 32, 8]]
+                  2: [[128, 128, 128], [64, 32, 8]],
+                  3: [[128, 128], [16]],
                   }
 
 # Video process

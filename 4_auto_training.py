@@ -38,30 +38,33 @@ if __name__ == '__main__':
                         begin_time = time.time()
                         batch_size = config.batch_size[net]
                         net_string = "{}_struct{}_".format(net, num) + time_str
-                        if net == "TCN":
-                            log_name = os.path.join(res_dest, "log", net_string + ".txt")
-                            model_name = os.path.join(res_dest, "model", net_string + ".pth")
-                            train_loss, val_loss, val_acc = TCNTrainer(config.data_path, epoch, dropout, lr, model_name,
-                                                              log_name, batch_size, n_classes, num).train_tcn()
+                        try:
+                            if net == "TCN":
+                                log_name = os.path.join(res_dest, "log", net_string + ".txt")
+                                model_name = os.path.join(res_dest, "model", net_string + ".pth")
+                                train_loss, val_loss, val_acc = TCNTrainer(config.data_path, epoch, dropout, lr, model_name,
+                                                                  log_name, batch_size, n_classes, num).train_tcn()
 
-                        elif net == "LSTM":
-                            log_name = os.path.join(res_dest, "log", net_string + ".csv")
-                            model_name = os.path.join(res_dest, "model", net_string + ".h5")
-                            os.makedirs(os.path.join(res_dest, "LSTM_graph/loss"), exist_ok=True)
-                            os.makedirs(os.path.join(res_dest, "LSTM_graph/acc"), exist_ok=True)
-                            train_loss, val_loss, val_acc = LSTMTrainer(config.data_path, epoch, dropout, lr, model_name,
-                                        log_name, batch_size, n_classes, num).train_LSTM()
+                            elif net == "LSTM":
+                                log_name = os.path.join(res_dest, "log", net_string + ".csv")
+                                model_name = os.path.join(res_dest, "model", net_string + ".h5")
+                                os.makedirs(os.path.join(res_dest, "LSTM_graph/loss"), exist_ok=True)
+                                os.makedirs(os.path.join(res_dest, "LSTM_graph/acc"), exist_ok=True)
+                                train_loss, val_loss, val_acc = LSTMTrainer(config.data_path, epoch, dropout, lr, model_name,
+                                            log_name, batch_size, n_classes, num).train_LSTM()
 
-                        elif net == "ConvLSTM":
-                            log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")
-                            model_name = os.path.join(res_dest, "model", net_string + ".pth")
-                            train_loss, val_loss, val_acc = ConvLSTMTrainer(config.data_path, epoch, dropout, lr, model_name,
-                                                        log_name, batch_size, n_classes, num).train_convlstm()
+                            elif net == "ConvLSTM":
+                                log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")
+                                model_name = os.path.join(res_dest, "model", net_string + ".pth")
+                                train_loss, val_loss, val_acc = ConvLSTMTrainer(config.data_path, epoch, dropout, lr, model_name,
+                                                            log_name, batch_size, n_classes, num).train_convlstm()
 
-                        else:
-                            raise ValueError("Wrong model type")
+                            else:
+                                raise ValueError("Wrong model type")
 
-                        cost = time.time() - begin_time
-                        print("Total time cost is {}s\n".format(cost))
-                        res.write("{},{},{},{},{},{}, {},{},{}\n".format(
-                            net_string + ".pth", net, epoch, dropout, lr, num, train_loss, val_loss, val_acc))
+                            cost = time.time() - begin_time
+                            print("Total time cost is {}s\n".format(cost))
+                            res.write("{},{},{},{},{},{}, {},{},{}\n".format(
+                                net_string + ".pth", net, epoch, dropout, lr, num, train_loss, val_loss, val_acc))
+                        except:
+                            res.write("Error occurs when training!")
