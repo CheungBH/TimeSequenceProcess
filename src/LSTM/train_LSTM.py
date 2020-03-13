@@ -14,14 +14,16 @@ warnings.filterwarnings('ignore')
 
 input_channels = config.kps_num
 seq_length = config.training_frame
+LSTM_params = config.LSTM_structure
 
 
 class LSTMTrainer:
-    def __init__(self, data_path, epoch, dropout, lr, model_name, log_name, batch_size, n_classes):
+    def __init__(self, data_path, epoch, dropout, lr, model_name, log_name, batch_size, n_classes, num):
         self.dropout = dropout
         self.epoch = epoch
         self.data_path = data_path
         self.lr = lr
+        [self.LSTM_size, self.FC_size] = LSTM_params[num]
         self.model_name = model_name
         self.log_name = log_name
         self.batch_size = batch_size
@@ -66,10 +68,12 @@ class LSTMTrainer:
         model = Sequential()
         model.add(Masking(mask_value=-1, input_shape=(input_channels, seq_length)))  # 此函数定义是，如果后面是-1就不参与计算
         # model.add(LSTM(16,dropout=0.2,recurrent_dropout=0.2, return_sequences=True))
-        model.add(LSTM(128, dropout=self.dropout, recurrent_dropout=self.dropout, return_sequences=True))
-        model.add(LSTM(128, dropout=self.dropout, recurrent_dropout=self.dropout, return_sequences=False))
-        model.add(Dense(64, activation='relu'))
-        model.add(Dense(16, activation='relu'))
+        for lstm in self.LSTM_size[:-1]:
+            model.add(LSTM(lstm, dropout=self.dropout, recurrent_dropout=self.dropout, return_sequences=True))
+        model.add(LSTM(self.LSTM_size[-1], dropout=self.dropout, recurrent_dropout=self.dropout, return_sequences=False))
+        for fc in self.FC_size:
+            model.add(Dense(fc, activation='relu'))
+            model.add(Dense(fc, activation='relu'))
         model.add(Dense(self.num, activation='softmax'))
         return model
 
@@ -91,6 +95,10 @@ class LSTMTrainer:
         plt.yticks(fontsize=10)
         plt.tight_layout()
         plt.savefig(self.loss_graph_name)
+        min_train_loss = min(hist["loss"])
+        min_val_loss = min(hist["val_loss"])
+        return min_train_loss, min_val_loss
+
 
     def __plot_acc(self, hist):
         fig = plt.figure(figsize=(7.5, 5))
@@ -120,10 +128,11 @@ class LSTMTrainer:
         hist = self.model.fit(x=train_x, y=train_y, batch_size=self.batch_size, epochs=self.epoch, verbose=2,
                               callbacks=callbacks_list, validation_data=(test_x, test_y), shuffle=True)
         self.model.save(self.model_name)
-        self.__plot_loss(hist.history)
-        self.__plot_acc(hist.history)
+        train_loss, val_loss = self.__plot_loss(hist.history)
+        val_acc = self.__plot_acc(hist.history)
+        return train_loss, val_loss, val_acc
 
 
 if __name__ == '__main__':
     os.makedirs("LSTM_graph",exist_ok=True)
-    LSTMTrainer("../../5_input/input1", 1000, 0.2, "", "LSTM.h5", 'train_log.csv', 32, 2).train_LSTM()
+    LSTMTrainer("../../5_input/input1", 2, 0.2, "", "LSTM.h5", 'train_log.csv', 32, 2, 1).train_LSTM()

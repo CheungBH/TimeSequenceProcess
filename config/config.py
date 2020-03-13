@@ -35,7 +35,9 @@ ConvLSTM_structure = {1:[[128, 64, 64, 32, 32], (7, 7), False],
 
 
 # LSTM structure
-LSTM_structure = {1: []}
+LSTM_structure = {1: [[128, 128], [64, 16]],
+                  2: [[128, 128, 128], [64, 32, 8]]
+                  }
 
 # Video process
 video_process_class = ["drown", "swim"]
@@ -62,12 +64,12 @@ merge_comment = "Inpute test: swim, test100, test101, all samples, 30f, 10s"
 
 # Auto training config
 data_path = '5_input/input1/'
-networks = ["ConvLSTM", "TCN"]
+networks = ["LSTM"]
 
 epoch_ls = {"LSTM": [2, 3],
             "TCN": [5, 10, 8],
             "ConvLSTM": [2]}
-dropout_ls = {"LSTM": [0.2, 0.4],
+dropout_ls = {"LSTM": [0.2],
               "TCN": [0.05, 0.1],
               "ConvLSTM": [""]}  # ConvLSTM don't have any dropouts
 lr_ls = {"LSTM": [1e-4],
@@ -75,7 +77,7 @@ lr_ls = {"LSTM": [1e-4],
          "ConvLSTM": [1e-4]}
 structure_ls = {
     "ConvLSTM": [1,3],
-    "LSTM": [1,3],
+    "LSTM": [1,2],
     "TCN": [2,1]
 }
 
@@ -86,7 +88,7 @@ log_interval = 5
 training_labels = {0:"swim", 1:"drown"}
 
 data_info = "The data comes from input1"
-out_dest = "6_network/net2"
+out_dest = "tmp/LSTMnet2"
 
 
 
