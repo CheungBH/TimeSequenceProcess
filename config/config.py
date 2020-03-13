@@ -96,9 +96,9 @@ lr_ls = {"LSTM": [1e-4],
          "TCN": [1e-4],
          "ConvLSTM": [1e-4]}
 structure_ls = {
-    "ConvLSTM": [1, 2, 3],
-    "LSTM": [1],
-    "TCN": [1, 2, 3]
+    "ConvLSTM": [1,2,3,4,5,6,7,8],
+    "LSTM": [1,2,3,4,5,6,7,8,9],
+    "TCN": [1,2,3,4,5,6,7,8,9,10],
 }
 
 batch_size = {"LSTM": 128, "TCN": 128, "ConvLSTM": 32}
