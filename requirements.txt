@@ -7,3 +7,5 @@ argparse
 scikit-image
 scikit-learn
 matplotlib
+tensorflow
+tensorflow-gpu

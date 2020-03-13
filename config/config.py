@@ -66,21 +66,21 @@ merge_comment = "Inpute test: swim, test100, test101, all samples, 30f, 10s"
 
 # Auto training config
 data_path = '5_input/input1/'
-networks = ["TCN", "ConvLSTM"]
+networks = ["TCN", "LSTM", "ConvLSTM"]
 
-epoch_ls = {"LSTM": [2, 3],
-            "TCN": [5],
-            "ConvLSTM": [2]}
-dropout_ls = {"LSTM": [0.2],
+epoch_ls = {"LSTM": [200, 500, 1000],
+            "TCN": [100, 200, 500],
+            "ConvLSTM": [100, 200]}
+dropout_ls = {"LSTM": [0.2, 0.3],
               "TCN": [0.05, 0.1],
               "ConvLSTM": [""]}  # ConvLSTM don't have any dropouts
 lr_ls = {"LSTM": [1e-4],
          "TCN": [1e-4],
          "ConvLSTM": [1e-4]}
 structure_ls = {
-    "ConvLSTM": [3],
-    "LSTM": [1,2],
-    "TCN": [2,1]
+    "ConvLSTM": [1, 2, 3],
+    "LSTM": [1, 2, 3],
+    "TCN": [1, 2, 3]
 }
 
 batch_size = {"LSTM": 128, "TCN": 128, "ConvLSTM": 32}
@@ -89,8 +89,8 @@ training_frame = 30
 log_interval = 5
 training_labels = {0:"swim", 1:"drown"}
 
-data_info = "The data comes from input1"
-out_dest = "tmp/net9"
+data_info = "The data comes from input1, all datas, label is {swim, drown}, 30 frames, 10 steps"
+out_dest = "6_network/net1"
 
 
 
