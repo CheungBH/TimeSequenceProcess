@@ -118,7 +118,7 @@ class LSTMTrainer:
         plt.yticks(fontsize=10)
         plt.tight_layout()
         plt.savefig(self.acc_graph_name)
-        return
+        return max_val_acc
 
     def train_LSTM(self):
         reduce_lr = LearningRateScheduler(self.scheduler)
