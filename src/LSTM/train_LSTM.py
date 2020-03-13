@@ -105,9 +105,11 @@ class LSTMTrainer:
         try:
             plt.plot(hist['accuracy'], linewidth=2.0)
             plt.plot(hist['val_accuracy'], linewidth=2.0)
+            max_val_acc = max(hist["val_accuracy"])
         except:
             plt.plot(hist['acc'], linewidth=2.0)
             plt.plot(hist['val_acc'], linewidth=2.0)
+            max_val_acc = max(hist["val_acc"])
         plt.title('Model Accuracy', fontsize=15)
         plt.ylabel('accuracy', fontsize=15)
         plt.xlabel('epoch', fontsize=15)
@@ -116,6 +118,7 @@ class LSTMTrainer:
         plt.yticks(fontsize=10)
         plt.tight_layout()
         plt.savefig(self.acc_graph_name)
+        return
 
     def train_LSTM(self):
         reduce_lr = LearningRateScheduler(self.scheduler)
