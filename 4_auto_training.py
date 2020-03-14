@@ -26,6 +26,7 @@ if __name__ == '__main__':
         f.write("\n" + config.data_info)
     res.write("model_name, model_type, epochs, dropout, learning-rate, structure_num, min_train_loss, min_val_loss,"
               "max_val_acc\n")
+    res.close()
 
     cnt = 0
     for net in config.networks:
@@ -41,6 +42,7 @@ if __name__ == '__main__':
                         begin_time = time.time()
                         batch_size = config.batch_size[net]
                         net_string = "{}_struct{}_".format(net, num) + time_str
+                        res = open(os.path.join(res_dest, "result.txt"), "a+")
                         try:
                             if net == "TCN":
                                 log_name = os.path.join(res_dest, "log", net_string + ".txt")
@@ -73,3 +75,4 @@ if __name__ == '__main__':
                                 net_string + ".pth", net, epoch, dropout, lr, num, train_loss, val_loss, val_acc))
                         except:
                             res.write("Error occurs when training!")
+                        res.close()

@@ -13,9 +13,8 @@ store_size = config.size
 
 
 class LabelVideo:
-    def __init__(self, video_path, id_ls, label_path):
+    def __init__(self, video_path, label_path):
         self.label_path = label_path
-        self.id_ls = id_ls
         self.video_path = video_path
         self.idbox_cnt = defaultdict(int)
         self.label = defaultdict(list)
@@ -39,7 +38,8 @@ class LabelVideo:
                 lf.write("{}:{}\n".format(k,label))
 
     def process(self):
-        for num in self.id_ls:
+        num = 1
+        while True:
             print("Begin processing id {}".format(num))
             cnt = 0
             self.idbox_cnt = defaultdict(int)
@@ -73,11 +73,18 @@ class LabelVideo:
                     cv2.waitKey(2)
 
                 else:
+                    exist_ids = self.idbox_cnt.keys()
                     break
 
             cap.release()
             IP.init_sort()
             cv2.destroyAllWindows()
+
+            num = input("Continue labelling other ids? (input id num to continue, 'no' to break)")
+            if num == "no":
+                num = eval(num)
+                continue
+            break
 
         self.__write_label()
 
@@ -96,17 +103,17 @@ class AutoLabel:
                 print("{} has been processed!\n".format(v))
                 continue
 
-            LV = LabelVideo(v, [1, 2], l)
+            LV = LabelVideo(v, l)
             print("Begin processing video {}".format(v))
             LV.process()
-            print("Finish process\n")
+            print("Finish\n")
 
         with open(self.label_log, "a+") as f:
             f.write(comment + "\n")
 
 
 if __name__ == '__main__':
-    video_s = "tmp/v_1"
+    video_s = "tmp/test_v"
     label_name = "label1"
     os.makedirs(os.path.join(video_s, label_name), exist_ok=True)
     AL = AutoLabel(video_s, label_name)

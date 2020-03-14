@@ -5,10 +5,11 @@ from collections import defaultdict
 from src.ConvLSTM.test_ConvLstm import ConvLSTMPredictor
 from src.human_detection import ImgprocessorAllKPS as ImgProcessor
 import numpy as np
+import os
 
 
-model_path = "6_network/net_test/model/TCN_2020-03-09-18-02-41.pth"
 cls = ["swim", "drown"]
+num_classes = len(cls)
 seq_length = 30
 IP = ImgProcessor()
 store_size = (540, 360)
@@ -33,11 +34,11 @@ class Tester:
 
     def __get_tester(self, model):
         if "ConvLSTM" in model:
-            return ConvLSTMPredictor(model)
+            return ConvLSTMPredictor(model, num_classes)
         if 'LSTM' in model:
             return LSTMPredictor(model)
         if "TCN" in model:
-            return TCNPredictor(model)
+            return TCNPredictor(model, num_classes)
 
     def __detect_kps(self):
         refresh_idx = []
@@ -89,5 +90,12 @@ class Tester:
 
 
 if __name__ == '__main__':
-    video = "1_video/test/others/1_Trim.mp4"
-    Tester(model_path, video).test()
+    model_path = "tmp/net1/model/TCN_struct1_2020-03-14-18-01-49.pth"
+
+    # video = "1_video/swim/1_1_Trim.mp4"
+    # Tester(model_path, video).test()
+
+    video_folder = "tmp/train_video/swim"
+    for video in os.listdir(video_folder):
+        Tester(model_path, os.path.join(video_folder, video))
+

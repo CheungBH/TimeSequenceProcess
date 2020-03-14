@@ -14,7 +14,7 @@ kps_num = config.test_kps_num
 class ConvLSTMPredictor(object):
     def __init__(self, model_name, n_classes):
         # self.input_data = np.loadtxt(data_pth).astype(np.float32).reshape(-1,1,17,2)#(seq_l, 1, 17, 2)
-        structure_num = int(model_name.split('_')[1][6:])
+        structure_num = int((model_name.split("/")[-1]).split('_')[1][6:])
         [hidden_channel, kernel_size, attention] = ConvLSTM_params[structure_num]
         self.model = ConvLSTM(input_size=(int(kps_num/2), 2),
                              input_dim=1,

@@ -83,8 +83,8 @@ merge_comment = "Inpute test: swim, test100, test101, all samples, 30f, 10s"
 
 
 # Auto training config
-train_data_path = '5_input/input1/equal'
-networks = ["TCN", "ConvLSTM"]
+train_data_path = '5_input/input1'
+networks = ["TCN"]
 
 epoch_ls = {"LSTM": [200, 500, 1000],
             "TCN": [500, 1000],
@@ -108,7 +108,7 @@ log_interval = 5
 training_labels = {0:"swim", 1:"drown"}
 
 data_info = "net_1: The data comes from input1, all datas, label is {swim, drown}, 30 frames, 10 steps"
-out_dest = "6_network/net_1"
+out_dest = "6_network/net_all"
 
 
 

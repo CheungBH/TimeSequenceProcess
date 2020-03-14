@@ -178,7 +178,7 @@ if __name__ == '__main__':
     # print(rslt)
     AT = AutoTester("tmp/net1", "tmp/v_1/video", "tmp/v_1/label1")
     test_result, model_name = AT.test()
-    write_result(test_result, model_name, "tmp/out1.csv")
+    write_result(test_result, model_name, "tmp/out_test.csv")
 
 
     # t.pred_dict["1"] = ["drown", "swim"]

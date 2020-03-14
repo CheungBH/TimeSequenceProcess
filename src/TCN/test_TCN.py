@@ -4,15 +4,17 @@ sys.path.append("../../")
 from src.TCN.TCNsrc.model import TCN
 import numpy as np
 from config import config
+import os
 
 device = config.device
 TCN_params = config.TCN_structure
 kps_num = config.test_kps_num
+cls = ["drown", "swim"]
 
 
 class TCNPredictor:
     def __init__(self, model_name, n_classes):
-        structure_num = int(model_name.split('_')[1][6:])
+        structure_num = int((model_name.split("/")[-1]).split('_')[1][6:])
         [channel_size, kernel_size, dilation] = TCN_params[structure_num]
         self.model = TCN(input_size=kps_num,
                          output_size=n_classes,
@@ -40,10 +42,22 @@ class TCNPredictor:
         return pred
 
 
+class TestWithtxt:
+    def __init__(self, model_name):
+        self.tester = TCNPredictor(model_name, 2)
+
+    def pred_txt(self, txt_path):
+        inps = np.loadtxt(txt_path)
+        for inp in inps:
+            inp = inp.astype(np.float32).reshape(-1, 34)
+            res = self.tester.predict(inp)
+            print(res)
+
+
 if __name__ == '__main__':
-    model_pth = 'TCN_struct1_10-10-10-10-10-10.pth'
-    input_pth = 'data.txt'
-    inp = np.loadtxt(input_pth).astype(np.float32).reshape(-1,34)
-    prediction = TCNPredictor(model_pth, 2)
-    res = prediction.predict(inp)
-    print(res)
+    model_pth = "TCN_struct1_2020-03-14-17-55-43.pth"
+    input_folder = 'data/swim'
+
+    Test = TestWithtxt(model_pth)
+    for txt in os.listdir(input_folder):
+        Test.pred_txt(os.path.join(input_folder, txt))
