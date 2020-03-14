@@ -21,6 +21,9 @@ class LabelVideo:
         self.label = defaultdict(list)
         self.cls = {str(idx): label for idx, label in enumerate(cls)}
         self.cls["p"] = "pass"
+        self.cls_str = ""
+        for k, v in self.cls.items():
+            self.cls_str += "{}-->{}, ".format(k,v)
         self.id_record = defaultdict(bool)
 
     def __put_cnt(self, img):
@@ -30,7 +33,7 @@ class LabelVideo:
         return img
 
     def __write_label(self):
-        with open(self.label_path, "w") as lf:
+        with open(self.label_path, "a+") as lf:
             for k,v in self.label.items():
                 label = " ".join([self.cls[name] for name in v])
                 lf.write("{}:{}\n".format(k,label))
@@ -57,8 +60,11 @@ class LabelVideo:
 
                         if num in kps.keys():
                             if self.idbox_cnt[num] % frame_length == 0 and self.idbox_cnt[num] != 0 and recorded == False:
-                                self.label[num].append(input("The label of id {} is: ".format(num)))
+                                inp = input("({}) The label of id {} is: ".format(self.cls_str[:-2], num))
                                 recorded = True
+                                while inp not in self.cls:
+                                    inp = input("Your input is not right! The label of id {} is: ".format(num))
+                                self.label[num].append(inp)
                             else:
                                 if self.idbox_cnt[num] % frame_length != 0:
                                     recorded = False
@@ -87,10 +93,10 @@ class AutoLabel:
     def process(self):
         for v, l in zip(self.video_ls, self.label_ls):
             if os.path.exists(l):
-                print("{} has been processed!".format(v))
+                print("{} has been processed!\n".format(v))
                 continue
 
-            LV = LabelVideo(v, [1,2], l)
+            LV = LabelVideo(v, [1, 2], l)
             print("Begin processing video {}".format(v))
             LV.process()
             print("Finish process\n")
@@ -100,8 +106,8 @@ class AutoLabel:
 
 
 if __name__ == '__main__':
-    video_s = "tmp/v2"
-    label_name = "label2"
+    video_s = "tmp/v_1"
+    label_name = "label1"
     os.makedirs(os.path.join(video_s, label_name), exist_ok=True)
     AL = AutoLabel(video_s, label_name)
     AL.process()

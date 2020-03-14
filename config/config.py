@@ -21,7 +21,7 @@ pose_batch = 80
 
 # TCN structure
 TCN_structure = {1:[[6, 6, 6, 6], 5, 2],
-                 # [channel_size, kernel_size]
+                 # [channel_size, kernel_size, dilation]
                  2: [[3, 4, 5, 6], 5, 4],
                  3: [[6, 6, 6, 6], 7, 2],
                  4: [[12, 12, 12, 12], 7, 2],
@@ -83,12 +83,12 @@ merge_comment = "Inpute test: swim, test100, test101, all samples, 30f, 10s"
 
 
 # Auto training config
-train_data_path = '5_input/input1/'
-networks = ["LSTM"]
+train_data_path = '5_input/input1/equal'
+networks = ["TCN", "ConvLSTM"]
 
 epoch_ls = {"LSTM": [200, 500, 1000],
-            "TCN": [100, 200, 500],
-            "ConvLSTM": [100, 200]}
+            "TCN": [500, 1000],
+            "ConvLSTM": [200,500]}
 dropout_ls = {"LSTM": [0.2],
               "TCN": [0.05, 0.1],
               "ConvLSTM": [""]}  # ConvLSTM don't have any dropouts
@@ -96,9 +96,9 @@ lr_ls = {"LSTM": [1e-4],
          "TCN": [1e-4],
          "ConvLSTM": [1e-4]}
 structure_ls = {
-    "ConvLSTM": [1,2,3,4,5,6,7,8],
-    "LSTM": [1,2,3,4,5,6,7,8,9],
-    "TCN": [1,2,3,4,5,6,7,8,9,10],
+    "ConvLSTM": [1,2],
+    "LSTM": [1],
+    "TCN": [1,2,3],
 }
 
 batch_size = {"LSTM": 128, "TCN": 128, "ConvLSTM": 32}
@@ -107,8 +107,8 @@ training_frame = 30
 log_interval = 5
 training_labels = {0:"swim", 1:"drown"}
 
-data_info = "The data comes from input1, all datas, label is {swim, drown}, 30 frames, 10 steps"
-out_dest = "6_network/test"
+data_info = "net_1: The data comes from input1, all datas, label is {swim, drown}, 30 frames, 10 steps"
+out_dest = "6_network/net_1"
 
 
 

@@ -1,8 +1,8 @@
-from models.TCN.test_TCN import TCNPredictor
+from src.TCN.test_TCN import TCNPredictor
 from src.LSTM.test_LSTM import LSTMPredictor
 import cv2
 from collections import defaultdict
-from models.ConvLSTM.test_ConvLstm import ConvLSTMPredictor
+from src.ConvLSTM.test_ConvLstm import ConvLSTMPredictor
 from src.human_detection import ImgprocessorAllKPS as ImgProcessor
 import numpy as np
 from config import config
@@ -144,9 +144,10 @@ class AutoTester:
     def test(self):
         for model in self.models:
             model_res = defaultdict()
+            print("Model name: {}".format(model))
             self.model_name.append(model.split("\\")[-1])
             for v, l in zip(self.videos, self.labels):
-                print("\nBegin processing {}".format(v))
+                print("Begin processing {}".format(v))
                 res = Tester(model, v, l).test()
                 model_res.update(res)
             print(model_res)
@@ -175,9 +176,9 @@ if __name__ == '__main__':
     #            "tmp/v_1/label1/50_Trim.txt")
     # rslt = t.test()
     # print(rslt)
-    AT = AutoTester("tmp/models", "tmp/v_1/video", "tmp/v_1/label1")
+    AT = AutoTester("tmp/net1", "tmp/v_1/video", "tmp/v_1/label1")
     test_result, model_name = AT.test()
-    write_result(test_result, model_name, "tmp/out.csv")
+    write_result(test_result, model_name, "tmp/out1.csv")
 
 
     # t.pred_dict["1"] = ["drown", "swim"]
