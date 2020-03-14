@@ -80,11 +80,22 @@ class LabelVideo:
             IP.init_sort()
             cv2.destroyAllWindows()
 
-            num = input("Continue labelling other ids? (input id num to continue, 'no' to break)")
-            if num == "no":
-                num = eval(num)
+            if_continue = input("Continue labelling other ids? ('no' to break)")
+            if if_continue == "no":
+                break
+            else:
+                while True:
+                    num = input("Please input the target id:")
+                    try:
+                        num = eval(num)
+                        if num in exist_ids:
+                            break
+                        else:
+                            print("Your id assigned is not included in the exist ids!")
+                    except:
+                        print("Please input number!")
+                        continue
                 continue
-            break
 
         self.__write_label()
 
@@ -94,7 +105,6 @@ class AutoLabel:
         self.video_ls = [os.path.join(video_src, "video", v_name) for v_name in os.listdir(os.path.join(video_src, "video"))]
         self.label_ls = [video_path.replace("video", label_folder)[:-4] +".txt" for video_path in self.video_ls]
         os.makedirs(video_src.replace("video", label_folder), exist_ok=True)
-        self.ids = []
         self.label_log = os.path.join(video_src, "label_log.txt")
 
     def process(self):
@@ -114,7 +124,7 @@ class AutoLabel:
 
 if __name__ == '__main__':
     video_s = "tmp/test_v"
-    label_name = "label1"
+    label_name = "label2"
     os.makedirs(os.path.join(video_s, label_name), exist_ok=True)
     AL = AutoLabel(video_s, label_name)
     AL.process()
