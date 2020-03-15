@@ -117,18 +117,18 @@ label_comment = "label1: 30 frames, 2 classes: (swim, drown)"
 label_frame = 30
 label_cls = ["swim", "drown"]
 label_folder_name = "label1"
-label_video_src = ""
+label_main_folder = "7_test/train_v"
 
 
 
 # Auto testing config
-test_model_folder = ""
-test_video_folder = ""
-test_res_folder = ""
-test_label_folder = ""
+test_model_folder = "6_network/net_all/model"
+test_video_folder = "7_test/train_v/video"
+test_label_folder = "7_test/train_v/label1"
+test_res_file = "8_result/result1/train_video_res.csv"
 
 test_kps_num = 34
 testing_frame = 30
 
-test_comment = "Input "
+test_comment = "result1: all the datas, swim and drown, 30 frames, 10 steps. Video coming from v_1, and label_1"
 

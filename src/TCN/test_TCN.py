@@ -55,9 +55,10 @@ class TestWithtxt:
 
 
 if __name__ == '__main__':
-    model_pth = "TCN_struct1_2020-03-14-17-55-43.pth"
-    input_folder = 'data/swim'
+    model_pth = "model/TCN_struct3_2020-03-15-09-34-17.pth"
+    input_folder = 'data/drown'
 
     Test = TestWithtxt(model_pth)
     for txt in os.listdir(input_folder):
+        print("Processing {}".format(txt))
         Test.pred_txt(os.path.join(input_folder, txt))

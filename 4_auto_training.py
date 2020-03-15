@@ -20,7 +20,7 @@ if __name__ == '__main__':
     for n in config.networks:
         assert n in ['LSTM', "TCN", "ConvLSTM"], "Wrong model name, please check"
 
-    res = open(os.path.join(res_dest, "result.txt"), "w")
+    res = open(os.path.join(res_dest, "training_result.csv"), "w")
     shutil.copy(os.path.join(src_data_path, "cls.txt"), res_dest)
     with open(os.path.join("6_network", "description.txt"), "a+") as f:
         f.write("\n" + config.data_info)
@@ -42,7 +42,7 @@ if __name__ == '__main__':
                         begin_time = time.time()
                         batch_size = config.batch_size[net]
                         net_string = "{}_struct{}_".format(net, num) + time_str
-                        res = open(os.path.join(res_dest, "result.txt"), "a+")
+                        res = open(os.path.join(res_dest, "training_result.csv"), "a+")
                         try:
                             if net == "TCN":
                                 log_name = os.path.join(res_dest, "log", net_string + ".txt")

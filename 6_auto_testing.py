@@ -11,7 +11,7 @@ import csv
 
 model_folder = config.test_model_folder
 video_folder = config.test_video_folder
-result_folder = config.test_res_folder
+result_file = config.test_res_file
 label_folder = config.test_label_folder
 
 # with open(os.path.join("/".join(model_folder.split("/")[:-1]), "cls.txt"), "r") as cls_file:
@@ -135,6 +135,7 @@ class AutoTester:
         self.labels = [os.path.join(labels, l) for l in os.listdir(labels)]
         self.final_res = defaultdict(list)
         self.model_name = []
+        self.label = []
 
     def __merge_dict(self, res):
         for k, v in res.items():
@@ -149,6 +150,7 @@ class AutoTester:
             for v, l in zip(self.videos, self.labels):
                 print("Begin processing {}".format(v))
                 res = Tester(model, v, l).test()
+                # if not self.label:
                 model_res.update(res)
             print(model_res)
             self.__merge_dict(model_res)
@@ -176,9 +178,13 @@ if __name__ == '__main__':
     #            "tmp/v_1/label1/50_Trim.txt")
     # rslt = t.test()
     # print(rslt)
-    AT = AutoTester("tmp/net1", "tmp/v_1/video", "tmp/v_1/label1")
+    # AT = AutoTester("tmp/net1", "tmp/v_1/video", "tmp/v_1/label1")
+    # test_result, model_name = AT.test()
+    # write_result(test_result, model_name, "tmp/out_test.csv")
+
+    AT = AutoTester(model_folder, video_folder, label_folder)
     test_result, model_name = AT.test()
-    write_result(test_result, model_name, "tmp/out_test.csv")
+    write_result(test_result, model_name, result_file)
 
 
     # t.pred_dict["1"] = ["drown", "swim"]

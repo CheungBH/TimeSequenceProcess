@@ -7,6 +7,8 @@ from config import config
 cls = config.label_cls
 frame_length = config.label_frame
 comment = config.label_comment
+video_src = config.label_main_folder
+label_folder = config.label_folder_name
 
 IP = ImgProcessor()
 store_size = config.size
@@ -123,8 +125,8 @@ class AutoLabel:
 
 
 if __name__ == '__main__':
-    video_s = "tmp/test_v"
-    label_name = "label2"
-    os.makedirs(os.path.join(video_s, label_name), exist_ok=True)
-    AL = AutoLabel(video_s, label_name)
+    # video_s = "tmp/v_1"
+    # label_name = "label2"
+    os.makedirs(os.path.join(video_src, label_folder), exist_ok=True)
+    AL = AutoLabel(video_src, label_folder)
     AL.process()

@@ -69,6 +69,7 @@ class Tester:
             # print("Current frame is {}".format(cnt))
             ret, frame = self.cap.read()
             if ret:
+                frame = cv2.resize(frame, store_size)
                 kps, img = IP.process_img(frame)
                 if kps:
                     for key in kps:
@@ -85,17 +86,18 @@ class Tester:
 
             else:
                 self.cap.release()
+                IP.init_sort()
                 cv2.destroyAllWindows()
                 break
 
 
 if __name__ == '__main__':
-    model_path = "tmp/net1/model/TCN_struct1_2020-03-14-18-01-49.pth"
+    model_path = "6_network/net_all/model/TCN_struct1_2020-03-15-09-40-27.pth"
 
     # video = "1_video/swim/1_1_Trim.mp4"
     # Tester(model_path, video).test()
 
-    video_folder = "tmp/train_video/swim"
+    video_folder = "tmp/train_video/drown"
     for video in os.listdir(video_folder):
-        Tester(model_path, os.path.join(video_folder, video))
+        Tester(model_path, os.path.join(video_folder, video)).test()
 
