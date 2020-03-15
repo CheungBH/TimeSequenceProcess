@@ -7,8 +7,8 @@ from config import config
 cls = config.label_cls
 frame_length = config.label_frame
 comment = config.label_comment
-video_src = config.label_main_folder
-label_folder = config.label_folder_name
+videos = config.label_main_folder
+labels = config.label_folder_name
 
 IP = ImgProcessor()
 store_size = config.size
@@ -39,6 +39,15 @@ class LabelVideo:
                 label = " ".join([self.cls[name] for name in v])
                 lf.write("{}:{}\n".format(k,label))
 
+    def assign_label(self, num):
+        return input("({}) The label of id {} is: ".format(self.cls_str[:-2], num))
+
+    def if_continue(self):
+        return input("Continue labelling other ids? ('no' to break)")
+
+    def next_id(self):
+        return input("Please input the target id:")
+
     def process(self):
         num = 1
         while True:
@@ -62,7 +71,7 @@ class LabelVideo:
 
                         if num in kps.keys():
                             if self.idbox_cnt[num] % frame_length == 0 and self.idbox_cnt[num] != 0 and recorded == False:
-                                inp = input("({}) The label of id {} is: ".format(self.cls_str[:-2], num))
+                                inp = self.assign_label(num)
                                 recorded = True
                                 while inp not in self.cls:
                                     inp = input("Your input is not right! The label of id {} is: ".format(num))
@@ -82,12 +91,12 @@ class LabelVideo:
             IP.init_sort()
             cv2.destroyAllWindows()
 
-            if_continue = input("Continue labelling other ids? ('no' to break)")
+            if_continue = self.if_continue()
             if if_continue == "no":
                 break
             else:
                 while True:
-                    num = input("Please input the target id:")
+                    num = self.next_id()
                     try:
                         num = eval(num)
                         if num in exist_ids:
@@ -115,7 +124,7 @@ class AutoLabel:
                 print("{} has been processed!\n".format(v))
                 continue
 
-            LV = LabelVideo(v, l)
+            LV = self.get_labeler(v, l)
             print("Begin processing video {}".format(v))
             LV.process()
             print("Finish\n")
@@ -123,10 +132,44 @@ class AutoLabel:
         with open(self.label_log, "a+") as f:
             f.write(comment + "\n")
 
+    def get_labeler(self, video, label):
+        return LabelVideo(video, label)
+
+
+class LabelVideoWithSameLabel(LabelVideo):
+    def __init__(self, label, ids, video_src, label_folder):
+        super().__init__(video_src, label_folder)
+        self.label_str = label
+        self.cls_num = {c: str(i) for i, c in enumerate(cls)}
+        self.ids = ids
+        self.cnt = 0
+
+    def assign_label(self, num):
+        print("The action of id {} is {}".format(num, self.label_str))
+        return self.cls_num[self.label_str]
+
+    def next_id(self):
+        self.cnt += 1
+        return self.ids[self.cnt]
+
+    def if_continue(self):
+        return "yes"
+
+
+class AutoLabelWithSameLabel(AutoLabel):
+    def __init__(self, video_src, label_folder, label, ids=(1,)):
+        super().__init__(video_src, label_folder)
+        self.all_label = label
+        self.ids = ids
+
+    def get_labeler(self, video, label):
+        return LabelVideoWithSameLabel(self.all_label, self.ids, video, label)
+
 
 if __name__ == '__main__':
-    # video_s = "tmp/v_1"
-    # label_name = "label2"
-    os.makedirs(os.path.join(video_src, label_folder), exist_ok=True)
-    AL = AutoLabel(video_src, label_folder)
+    videos = "tmp/csv_test"
+    labels = "label4"
+    os.makedirs(os.path.join(videos, labels), exist_ok=True)
+    # AL = AutoLabel(videos, labels)
+    AL = AutoLabelWithSameLabel(videos, labels, "swim")
     AL.process()
