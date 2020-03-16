@@ -1,6 +1,8 @@
 from src.TCN.train_TCN import TCNTrainer
 from src.LSTM.train_LSTM import LSTMTrainer
 from src.ConvLSTM.train_ConvLSTM import ConvLSTMTrainer
+from src.BiLSTM.train_BiLSTM import BiLSTMTrainer
+from src.ConvGRU.train_ConvGRU import ConvGRUTrainer
 from config import config
 import time
 import shutil
@@ -18,7 +20,7 @@ with open(os.path.join(src_data_path, "cls.txt"), "r") as cls_file:
 
 if __name__ == '__main__':
     for n in config.networks:
-        assert n in ['LSTM', "TCN", "ConvLSTM"], "Wrong model name, please check"
+        assert n in ['LSTM', "TCN", "ConvLSTM", "BiLSTM", "ConvGRU"], "Wrong model name, please check"
 
     res = open(os.path.join(res_dest, "training_result.csv"), "w")
     shutil.copy(os.path.join(src_data_path, "cls.txt"), res_dest)
@@ -63,6 +65,18 @@ if __name__ == '__main__':
                                 model_name = os.path.join(res_dest, "model", net_string + ".pth")
                                 train_loss, val_loss, val_acc = ConvLSTMTrainer(src_data_path, epoch, dropout, lr, model_name,
                                                             log_name, batch_size, n_classes, num).train_convlstm()
+
+                            elif net == "BiLSTM":
+                                log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")
+                                model_name = os.path.join(res_dest, "model", net_string + ".pth")
+                                train_loss, val_loss, val_acc = BiLSTMTrainer(src_data_path, epoch, dropout, lr, model_name,
+                                                            log_name, batch_size, n_classes, num).train_bilstm()
+
+                            elif net == "ConvGRU":
+                                log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")
+                                model_name = os.path.join(res_dest, "model", net_string + ".pth")
+                                train_loss, val_loss, val_acc = ConvGRUTrainer(src_data_path, epoch, dropout, lr, model_name,
+                                                            log_name, batch_size, n_classes, num).train_convgru()
 
                             else:
                                 raise ValueError("Wrong model type")

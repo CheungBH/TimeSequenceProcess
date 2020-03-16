@@ -1,5 +1,7 @@
 from src.TCN.test_TCN import TCNPredictor
 from src.LSTM.test_LSTM import LSTMPredictor
+from src.ConvGRU.test_ConvGRU import ConvGRUPredictor
+from src.BiLSTM.test_BiLSTM import BiLSTMPredictor
 import cv2
 from collections import defaultdict
 from src.ConvLSTM.test_ConvLstm import ConvLSTMPredictor
@@ -57,6 +59,10 @@ class Tester:
     def __get_tester(self, model):
         if "ConvLSTM" in model:
             return ConvLSTMPredictor(model, len(cls))
+        if "BiLSTM" in model:
+            return BiLSTMPredictor(model, len(cls))
+        if "ConvGRU" in model:
+            return ConvGRUPredictor(model, len(cls))
         if 'LSTM' in model:
             return LSTMPredictor(model)
         if "TCN" in model:

@@ -5,6 +5,10 @@ import torch
 import pandas as pd
 
 
+image_normalize_mean = [0.485, 0.456, 0.406]
+image_normalize_std = [0.229, 0.224, 0.225]
+
+
 def reverse_csv(path):
     df = pd.read_csv(path, "r")
     data = df.values  # data是数组，直接从文件读出来的数据格式是数组
@@ -14,8 +18,21 @@ def reverse_csv(path):
     data.to_csv(path, header=0)
 
 
-image_normalize_mean = [0.485, 0.456, 0.406]
-image_normalize_std = [0.229, 0.224, 0.225]
+def __separate_sample(sample):
+    data, label = [], []
+    for item in sample:
+        data.append(item[0])
+        label.append(item[1])
+    return data, label
+
+
+def __ls_preprocess(ls):
+    try:ls.remove("\n")
+    except: pass
+    while True:
+        try: ls.remove("")
+        except ValueError: break
+    return ls
 
 
 class OneHotConverter:
