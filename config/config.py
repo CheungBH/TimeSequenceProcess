@@ -84,11 +84,11 @@ merge_comment = "Inpute test: swim, test100, test101, all samples, 30f, 10s"
 
 # Auto training config
 train_data_path = '5_input/input1'
-networks = ["TCN"]
+networks = ["LSTM"]
 
-epoch_ls = {"LSTM": [200, 500, 1000],
+epoch_ls = {"LSTM": [200],
             "TCN": [500, 1000],
-            "ConvLSTM": [200,500]}
+            "ConvLSTM": [300, ]}
 dropout_ls = {"LSTM": [0.2],
               "TCN": [0.05, 0.1],
               "ConvLSTM": [""]}  # ConvLSTM don't have any dropouts
@@ -98,7 +98,7 @@ lr_ls = {"LSTM": [1e-4],
 structure_ls = {
     "ConvLSTM": [1,2],
     "LSTM": [1],
-    "TCN": [1,2,3],
+    "TCN": [1,2,3,4,5],
 }
 
 batch_size = {"LSTM": 128, "TCN": 128, "ConvLSTM": 32}
@@ -108,7 +108,7 @@ log_interval = 5
 training_labels = {0:"swim", 1:"drown"}
 
 data_info = "net_1: The data comes from input1, all datas, label is {swim, drown}, 30 frames, 10 steps"
-out_dest = "6_network/net_all"
+out_dest = "tmp/net_lstm"
 
 
 
@@ -122,7 +122,7 @@ label_main_folder = "7_test/train_v"
 
 
 # Auto testing config
-test_model_folder = "tmp/models"
+test_model_folder = "tmp/net_lstm/model"
 test_video_folder = "tmp/csv_test/video"
 test_label_folder = "tmp/csv_test/label2"
 test_res_file = "tmp/train_video_res.csv"

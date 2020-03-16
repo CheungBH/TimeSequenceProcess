@@ -119,13 +119,15 @@ class AutoLabel:
         self.label_log = os.path.join(video_src, "label_log.txt")
 
     def process(self):
+        video_cnt = 0
         for v, l in zip(self.video_ls, self.label_ls):
+            video_cnt += 1
             if os.path.exists(l):
-                print("{} has been processed!\n".format(v))
+                print("--- [{}/{}] {} has been processed!\n".format(video_cnt, len(self.video_ls),v))
                 continue
 
             LV = self.get_labeler(v, l)
-            print("Begin processing video {}".format(v))
+            print("--- [{}/{}] Begin processing video {}".format(video_cnt, len(self.video_ls),v))
             LV.process()
             print("Finish\n")
 

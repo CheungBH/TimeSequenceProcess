@@ -4,7 +4,7 @@ from keras.models import load_model
 
 class LSTMPredictor:
     def __init__(self, model_pth):
-        self.model = model_pth
+        self.model = load_model(model_pth)
 
     def predict(self, data):
         output = self.model.predict(data)

@@ -146,19 +146,23 @@ class AutoTester:
         print(self.final_res)
 
     def test(self):
+        model_cnt = 0
         write_gt = True
         for model in self.models:
+            model_cnt += 1
             model_res = defaultdict()
-            print("Model name: {}".format(model))
+            print("\n[{}/{}] ---> Testing model {}".format(model_cnt, len(self.models), model))
             self.model_name.append(model.split("\\")[-1])
+            video_cnt = 0
             for v, l in zip(self.videos, self.labels):
-                print("Begin processing {}".format(v))
+                video_cnt += 1
+                print("--- [{}/{}]. processing video {}".format(video_cnt, len(self.videos), v))
                 tester = Tester(model, v, l)
                 res = tester.test()
                 if write_gt:
                     self.label_dict.update(tester.label_dict)
                 model_res.update(res)
-            print(model_res)
+            # print(model_res)
             write_gt = False
             self.__merge_dict(model_res)
         return self.final_res
