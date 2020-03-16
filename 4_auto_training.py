@@ -8,7 +8,7 @@ import os
 
 res_dest = config.out_dest
 src_data_path = config.train_data_path
-#if os.path.exists(res_dest): raise ValueError("The destination path '{}' exists!".format(res_dest))
+if os.path.exists(res_dest): raise ValueError("The destination path '{}' exists!".format(res_dest))
 os.makedirs(os.path.join(res_dest, "model"), exist_ok=True)
 os.makedirs(os.path.join(res_dest, "log"), exist_ok=True)
 # n_classes = len(config.training_labels)
@@ -74,5 +74,5 @@ if __name__ == '__main__':
                             res.write("{},{},{},{},{},{}, {},{},{}\n".format(
                                 net_string + ".pth", net, epoch, dropout, lr, num, train_loss, val_loss, val_acc))
                         except:
-                            res.write("Error occurs when training!")
+                            res.write("{},Error occurs when training!".format(net_string))
                         res.close()

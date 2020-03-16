@@ -149,10 +149,12 @@ class LabelVideoWithSameLabel(LabelVideo):
         return self.cls_num[self.label_str]
 
     def next_id(self):
-        self.cnt += 1
         return self.ids[self.cnt]
 
     def if_continue(self):
+        self.cnt += 1
+        if self.cnt >= len(self.ids):
+            return "no"
         return "yes"
 
 

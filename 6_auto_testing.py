@@ -8,6 +8,7 @@ import numpy as np
 from config import config
 import os
 import csv
+from utils.utils import reverse_csv
 
 model_folder = config.test_model_folder
 video_folder = config.test_video_folder
@@ -35,6 +36,7 @@ class Tester:
         self.pred = defaultdict(str)
         self.pred_dict = defaultdict(list)
         self.res = defaultdict(bool)
+        self.label_dict = defaultdict(bool)
 
     def __get_label(self, path):
         with open(path, "r") as lf:
@@ -85,7 +87,7 @@ class Tester:
         return img
 
     def __get_target_pred(self):
-        return {key: value for key,value in self.pred_dict.items() if key in self.test_id}
+        return {key: value for key, value in self.pred_dict.items() if key in self.test_id}
 
     def __compare(self):
         self.pred_dict = self.__get_target_pred()
@@ -96,7 +98,8 @@ class Tester:
             for idx, (l, p) in enumerate(zip(label, pred)):
                 if l != "pass":
                     sample_str = self.video_name[:-4] + "_id{}_frame{}-{}".format(k, 30 * idx, 30 * (idx + 1) - 1)
-                    self.res[sample_str]= l == p
+                    self.res[sample_str] = l == p
+                    self.label_dict[sample_str] = l
 
     def test(self):
         cnt = 0
@@ -135,7 +138,7 @@ class AutoTester:
         self.labels = [os.path.join(labels, l) for l in os.listdir(labels)]
         self.final_res = defaultdict(list)
         self.model_name = []
-        self.label = []
+        self.label_dict = defaultdict(bool)
 
     def __merge_dict(self, res):
         for k, v in res.items():
@@ -143,30 +146,34 @@ class AutoTester:
         print(self.final_res)
 
     def test(self):
+        write_gt = True
         for model in self.models:
             model_res = defaultdict()
             print("Model name: {}".format(model))
             self.model_name.append(model.split("\\")[-1])
             for v, l in zip(self.videos, self.labels):
                 print("Begin processing {}".format(v))
-                res = Tester(model, v, l).test()
-                # if not self.label:
+                tester = Tester(model, v, l)
+                res = tester.test()
+                if write_gt:
+                    self.label_dict.update(tester.label_dict)
                 model_res.update(res)
             print(model_res)
+            write_gt = False
             self.__merge_dict(model_res)
-        return self.final_res, self.model_name
+        return self.final_res
 
 
-def write_result(result, model_name, out):
-    f = open(out, "w")
+def write_result(result, model_name, out, gt):
+    f = open(out, "w", newline="")
     csv_writer = csv.writer(f)
-    out = ["model_name"]
+    out = ["model_name", "ground truth"]
     for model in model_name:
         out.append(model)
     csv_writer.writerow(out)
 
     for k, v in result.items():
-        out = [k]
+        out = [k, gt[k]]
         for res in v:
             out.append(res)
         csv_writer.writerow(out)
@@ -183,9 +190,11 @@ if __name__ == '__main__':
     # write_result(test_result, model_name, "tmp/out_test.csv")
 
     AT = AutoTester(model_folder, video_folder, label_folder)
-    test_result, model_name = AT.test()
-    write_result(test_result, model_name, result_file)
-
+    test_result = AT.test()
+    model_name = AT.model_name
+    ground_truth = AT.label_dict
+    write_result(test_result, model_name, result_file, ground_truth)
+    reverse_csv(result_file)
 
     # t.pred_dict["1"] = ["drown", "swim"]
     # t.pred_dict["2"] = ["drown"]

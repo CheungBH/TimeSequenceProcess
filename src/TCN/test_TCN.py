@@ -9,7 +9,7 @@ import os
 device = config.device
 TCN_params = config.TCN_structure
 kps_num = config.test_kps_num
-cls = ["drown", "swim"]
+cls = ["swim", "drown"]
 
 
 class TCNPredictor:

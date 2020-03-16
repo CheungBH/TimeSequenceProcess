@@ -122,10 +122,10 @@ label_main_folder = "7_test/train_v"
 
 
 # Auto testing config
-test_model_folder = "6_network/net_all/model"
-test_video_folder = "7_test/train_v/video"
-test_label_folder = "7_test/train_v/label1"
-test_res_file = "8_result/result1/train_video_res.csv"
+test_model_folder = "tmp/models"
+test_video_folder = "tmp/csv_test/video"
+test_label_folder = "tmp/csv_test/label2"
+test_res_file = "tmp/train_video_res.csv"
 
 test_kps_num = 34
 testing_frame = 30
