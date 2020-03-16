@@ -8,16 +8,15 @@ import numpy as np
 from config import config
 import os
 import csv
-from utils.utils import reverse_csv
 
 model_folder = config.test_model_folder
 video_folder = config.test_video_folder
 result_file = config.test_res_file
 label_folder = config.test_label_folder
 
-# with open(os.path.join("/".join(model_folder.split("/")[:-1]), "cls.txt"), "r") as cls_file:
-#     cls = [line for line in cls_file.readlines()]
-cls = ["swim", "drown"]
+with open(os.path.join("/".join(model_folder.split("/")[:-1]), "cls.txt"), "r") as cls_file:
+    cls = [line for line in cls_file.readlines()]
+# cls = ["swim", "drown"]
 
 seq_length = config.testing_frame
 IP = ImgProcessor()
@@ -192,13 +191,12 @@ if __name__ == '__main__':
     # AT = AutoTester("tmp/net1", "tmp/v_1/video", "tmp/v_1/label1")
     # test_result, model_name = AT.test()
     # write_result(test_result, model_name, "tmp/out_test.csv")
-
-    AT = AutoTester(model_folder, video_folder, label_folder)
+    os.makedirs("/".join(result_file.split('/')[:-1]), exist_ok=True)
+    AT = AutoTester("tmp/net_lstm/model", video_folder, label_folder)
     test_result = AT.test()
     model_name = AT.model_name
     ground_truth = AT.label_dict
     write_result(test_result, model_name, result_file, ground_truth)
-    reverse_csv(result_file)
 
     # t.pred_dict["1"] = ["drown", "swim"]
     # t.pred_dict["2"] = ["drown"]

@@ -48,7 +48,7 @@ class LSTMTrainer:
 
         while True:
             try: ls.remove("")
-            except ValueError:break
+            except ValueError: break
         return ls
 
     def __load_data(self):
@@ -59,14 +59,14 @@ class LSTMTrainer:
         for line in self.data.readlines():
             origin_ls = self.__ls_preprocess(line.split("\t"))
             ls = [float(item) for item in origin_ls]
-            data.append(np.array(ls).reshape((input_channels, seq_length)))
+            data.append(np.array(ls).reshape((seq_length, input_channels)))
         self.data.close()
         self.label.close()
         return np.array(data), np.array(one_hot_label)
 
     def __get_model(self):
         model = Sequential()
-        model.add(Masking(mask_value=-1, input_shape=(input_channels, seq_length)))  # 此函数定义是，如果后面是-1就不参与计算
+        model.add(Masking(mask_value=-1, input_shape=(seq_length, input_channels)))  # 此函数定义是，如果后面是-1就不参与计算
         # model.add(LSTM(16,dropout=0.2,recurrent_dropout=0.2, return_sequences=True))
         for lstm in self.LSTM_size[:-1]:
             model.add(LSTM(lstm, dropout=self.dropout, recurrent_dropout=self.dropout, return_sequences=True))
@@ -98,7 +98,6 @@ class LSTMTrainer:
         min_train_loss = min(hist["loss"])
         min_val_loss = min(hist["val_loss"])
         return min_train_loss, min_val_loss
-
 
     def __plot_acc(self, hist):
         fig = plt.figure(figsize=(7.5, 5))
@@ -138,4 +137,4 @@ class LSTMTrainer:
 
 if __name__ == '__main__':
     os.makedirs("LSTM_graph",exist_ok=True)
-    LSTMTrainer("../../5_input/input1", 2, 0.2, "", "LSTM.h5", 'train_log.csv', 32, 2, 1).train_LSTM()
+    LSTMTrainer("../../5_input/input_test", 50, 0.2, "", "LSTM.h5", 'train_log.csv', 32, 2, 1).train_LSTM()

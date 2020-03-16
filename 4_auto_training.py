@@ -47,8 +47,8 @@ if __name__ == '__main__':
                             if net == "TCN":
                                 log_name = os.path.join(res_dest, "log", net_string + ".txt")
                                 model_name = os.path.join(res_dest, "model", net_string + ".pth")
-                                train_loss, val_loss, val_acc = TCNTrainer(src_data_path, epoch, dropout, lr, model_name,
-                                                                  log_name, batch_size, n_classes, num).train_tcn()
+                                train_loss, val_loss, val_acc = TCNTrainer(src_data_path, epoch, dropout, lr,
+                                                    model_name, log_name, batch_size, n_classes, num).train_tcn()
 
                             elif net == "LSTM":
                                 log_name = os.path.join(res_dest, "log", net_string + ".csv")
@@ -71,7 +71,7 @@ if __name__ == '__main__':
                             with open(log_name, "a+") as log:
                                 print("Total time cost is {}s\n".format(cost))
                                 log.write("\nTotal time cost is {}s\n".format(cost))
-                            res.write("{},{},{},{},{},{}, {},{},{}\n".format(
+                            res.write("{},{},{},{},{},{},{},{},{}\n".format(
                                 net_string + ".pth", net, epoch, dropout, lr, num, train_loss, val_loss, val_acc))
                         except:
                             res.write("{},Error occurs when training!".format(net_string))
