@@ -2,6 +2,7 @@ import os
 import torch
 from torch import nn
 from torch.autograd import Variable
+import torch.nn.functional as F
 
 use_cuda = torch.cuda.is_available()                   # check if GPU exists
 device = torch.device("cuda" if use_cuda else "cpu")   # use CPU or GPU
@@ -9,6 +10,28 @@ if use_cuda:
     print('use CUDA')
 else:
     print('use CPU')
+
+class SelfAttention(nn.Module):
+    def __init__(self, hidden_dim, height, width):
+        super().__init__()
+        self.hidden_dim = hidden_dim
+        self.height = height
+        self.width = width
+        self.projection = nn.Sequential(
+            nn.Linear(hidden_dim*self.height*self.width, 64),
+            nn.ReLU(True),
+            nn.Linear(64, 1)
+        )
+
+    def forward(self, encoder_outputs):
+        batch_size = encoder_outputs.size(0)
+        #print(batch_size)
+        energy = self.projection(encoder_outputs)
+        #print(energy.shape)
+        weights = F.softmax(energy.squeeze(-1), dim=1)
+        #print(weights.shape)
+        outputs = (encoder_outputs * weights.unsqueeze(-1)).sum(dim=1)
+        return outputs, weights
 
 class ConvGRUCell(nn.Module):
     def __init__(self, input_size, input_dim, hidden_dim, kernel_size, bias):
@@ -74,7 +97,7 @@ class ConvGRUCell(nn.Module):
 
 class ConvGRU(nn.Module):
     def __init__(self, input_size, input_dim, hidden_dim, kernel_size, num_layers, num_classes, batch_size,
-                 batch_first=False, bias=True, return_all_layers=False):
+                 batch_first=False, bias=True, return_all_layers=False, attention = None):
         """
 
         :param input_size: (int, int)
@@ -116,6 +139,7 @@ class ConvGRU(nn.Module):
         self.batch_first = batch_first
         self.bias = bias
         self.return_all_layers = return_all_layers
+        self.attention = attention
 
         cell_list = []
         for i in range(0, self.num_layers):
@@ -128,6 +152,7 @@ class ConvGRU(nn.Module):
 
         # convert python list to pytorch module
         self.cell_list = nn.ModuleList(cell_list)
+        self.attention_layer = SelfAttention(hidden_dim[-1], self.height, self.width)
         self.output_layer = nn.Sequential(nn.Linear(self.hidden_dim[-1]*self.height*self.width, self.hidden_dim[-1]),
                                         nn.BatchNorm1d(self.hidden_dim[-1]),
                                         nn.ReLU(),
@@ -177,10 +202,17 @@ class ConvGRU(nn.Module):
             last_state_list   = last_state_list[-1:]
 
         x = layer_output_list[0][:,-1,:,:,:]#(1, 64, 6, 6)
-        
-        x = x.view(x.size(0),-1)#()
-        #print('x:',x.shape)
-        return self.output_layer(x)
+        final_hidden_state = last_state_list[0][0]
+        if self.attention:
+            x = x.view(x.size(0),-1).unsqueeze(1)
+        #print(x.shape)
+            embedding, attn_weights = self.attention_layer(x)
+            output = self.output_layer(embedding)
+        #x = self.output_layer(x)
+            return output
+        else:
+            x = x.view(x.size(0),-1)
+            return self.output_layer(x)
 
 
     def _init_hidden(self, batch_size):
@@ -218,10 +250,11 @@ if __name__ == '__main__':
                     batch_size = 2,
                     batch_first=True,
                     bias = True,
-                    return_all_layers = False).cuda()
+                    return_all_layers = False,
+                    attention=True).cuda()
 
     batch_size = 2
     time_steps = 3
     input_tensor = torch.rand(batch_size, time_steps, channels, height, width).cuda()  # (b,t,c,h,w)
     output = model(input_tensor)
-    #print(output.shape)
+    print(output.shape)

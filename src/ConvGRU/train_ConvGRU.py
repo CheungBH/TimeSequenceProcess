@@ -30,7 +30,7 @@ class ConvGRUTrainer:
 	def __init__(self, data_path, epoch, drop_out, lr, model_name, log_name, batch_size, n_classes, struct_num):
 		self.batch_size = batch_size
 		self.epoch = epoch
-		[hidden_channel, kernel_size] = ConvGRU_params[struct_num]
+		[hidden_channel, kernel_size, attention] = ConvGRU_params[struct_num]
 		self.model = ConvGRU(input_size=(int(input_channels / 2), 2),
 							 input_dim=1,
 							 hidden_dim=hidden_channel,
@@ -40,7 +40,8 @@ class ConvGRUTrainer:
 							 batch_size=batch_size,
 							 batch_first=True,
 							 bias=True,
-							 return_all_layers=False)
+							 return_all_layers=False,
+							 attention=attention)
 		if device != "cpu":
 			self.model.cuda()
 		self.name = model_name
@@ -154,5 +155,5 @@ class ConvGRUTrainer:
 
 
 if __name__ == '__main__':
-	ConvGRUTrainer("../../5_input/input1", 3, 0.05, 1e-4, "ConvGRU_struct1_2020-03-13-18-14-14.pth",
-				   "wtf.txt", 128, 2, 1).train_convgru()
+	ConvGRUTrainer("../../5_input/input1", 3, 0.05, 1e-4, "ConvGRU_struct2_2020-03-13-18-14-14.pth",
+				   "wtf.txt", 128, 2, 2).train_convgru()

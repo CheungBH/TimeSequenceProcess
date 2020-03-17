@@ -14,7 +14,7 @@ kps_num = config.test_kps_num
 class ConvGRUPredictor(object):
     def __init__(self, model_name, n_classes):
         structure_num = int((model_name.split("/")[-1]).split('_')[1][6:])
-        [hidden_channel, kernel_size] = ConvGRU_params[structure_num]
+        [hidden_channel, kernel_size, attention] = ConvGRU_params[structure_num]
         self.model = ConvGRU(input_size=(int(kps_num/2), 2),
                              input_dim=1,
                              hidden_dim=hidden_channel,
@@ -24,7 +24,8 @@ class ConvGRUPredictor(object):
                              batch_size = 1,
                              batch_first=True,
                              bias=True,
-                             return_all_layers=False)
+                             return_all_layers=False,
+                             attention=attention)
         self.model.load_state_dict(torch.load(model_name))
         if device != "cpu":
             self.model.cuda()
