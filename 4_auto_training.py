@@ -20,7 +20,7 @@ with open(os.path.join(src_data_path, "cls.txt"), "r") as cls_file:
 
 if __name__ == '__main__':
     for n in config.networks:
-        assert n in ['LSTM', "TCN", "ConvLSTM", "BiLSTM", "ConvGRU"], "Wrong model name, please check"
+        assert n in ['LSTM', "TCN", "ConvLSTM", "BiLSTM", "ConvGRU"], "Wrong model name '{}', please check".format(n)
 
     res = open(os.path.join(res_dest, "training_result.csv"), "w")
     shutil.copy(os.path.join(src_data_path, "cls.txt"), res_dest)
@@ -49,8 +49,8 @@ if __name__ == '__main__':
                             if net == "TCN":
                                 log_name = os.path.join(res_dest, "log", net_string + ".txt")
                                 model_name = os.path.join(res_dest, "model", net_string + ".pth")
-                                train_loss, val_loss, val_acc = TCNTrainer(src_data_path, epoch, dropout, lr,
-                                                    model_name, log_name, batch_size, n_classes, num).train_tcn()
+                                train_loss, val_loss, val_acc = TCNTrainer(src_data_path, epoch, dropout, lr, model_name,
+                                                    log_name, batch_size, n_classes, num).train_tcn()
 
                             elif net == "LSTM":
                                 log_name = os.path.join(res_dest, "log", net_string + ".csv")
@@ -58,25 +58,25 @@ if __name__ == '__main__':
                                 os.makedirs(os.path.join(res_dest, "LSTM_graph/loss"), exist_ok=True)
                                 os.makedirs(os.path.join(res_dest, "LSTM_graph/acc"), exist_ok=True)
                                 train_loss, val_loss, val_acc = LSTMTrainer(src_data_path, epoch, dropout, lr, model_name,
-                                            log_name, batch_size, n_classes, num).train_LSTM()
+                                                    log_name, batch_size, n_classes, num).train_LSTM()
 
                             elif net == "ConvLSTM":
                                 log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")
                                 model_name = os.path.join(res_dest, "model", net_string + ".pth")
                                 train_loss, val_loss, val_acc = ConvLSTMTrainer(src_data_path, epoch, dropout, lr, model_name,
-                                                            log_name, batch_size, n_classes, num).train_convlstm()
+                                                    log_name, batch_size, n_classes, num).train_convlstm()
 
                             elif net == "BiLSTM":
                                 log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")
                                 model_name = os.path.join(res_dest, "model", net_string + ".pth")
                                 train_loss, val_loss, val_acc = BiLSTMTrainer(src_data_path, epoch, dropout, lr, model_name,
-                                                            log_name, batch_size, n_classes, num).train_bilstm()
+                                                    log_name, batch_size, n_classes, num).train_bilstm()
 
                             elif net == "ConvGRU":
                                 log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")
                                 model_name = os.path.join(res_dest, "model", net_string + ".pth")
                                 train_loss, val_loss, val_acc = ConvGRUTrainer(src_data_path, epoch, dropout, lr, model_name,
-                                                            log_name, batch_size, n_classes, num).train_convgru()
+                                                    log_name, batch_size, n_classes, num).train_convgru()
 
                             else:
                                 raise ValueError("Wrong model type")
