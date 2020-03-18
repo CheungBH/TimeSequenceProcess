@@ -57,48 +57,48 @@ if __name__ == '__main__':
                         batch_size = config.batch_size[net]
                         net_string = "{}_struct{}_".format(net, num) + time_str
                         res = open(os.path.join(res_dest, "training_result.csv"), "a+")
-                        # try:
-                        if net == "TCN":
-                            log_name = os.path.join(res_dest, "log", net_string + ".txt")
-                            model_name = os.path.join(res_dest, "model", net_string + ".pth")
-                            train_loss, val_loss, val_acc = TCNTrainer(src_data_path, epoch, dropout, lr, model_name,
-                                                log_name, batch_size, n_classes, num).train_tcn()
+                        try:
+                            if net == "TCN":
+                                log_name = os.path.join(res_dest, "log", net_string + ".txt")
+                                model_name = os.path.join(res_dest, "model", net_string + ".pth")
+                                train_loss, val_loss, val_acc = TCNTrainer(src_data_path, epoch, dropout, lr, model_name,
+                                                    log_name, batch_size, n_classes, num).train_tcn()
 
-                        elif net == "LSTM":
-                            log_name = os.path.join(res_dest, "log", net_string + ".csv")
-                            model_name = os.path.join(res_dest, "model", net_string + ".h5")
-                            os.makedirs(os.path.join(res_dest, "LSTM_graph/loss"), exist_ok=True)
-                            os.makedirs(os.path.join(res_dest, "LSTM_graph/acc"), exist_ok=True)
-                            train_loss, val_loss, val_acc = LSTMTrainer(src_data_path, epoch, dropout, lr, model_name,
-                                                log_name, batch_size, n_classes, num).train_LSTM()
+                            elif net == "LSTM":
+                                log_name = os.path.join(res_dest, "log", net_string + ".csv")
+                                model_name = os.path.join(res_dest, "model", net_string + ".h5")
+                                os.makedirs(os.path.join(res_dest, "LSTM_graph/loss"), exist_ok=True)
+                                os.makedirs(os.path.join(res_dest, "LSTM_graph/acc"), exist_ok=True)
+                                train_loss, val_loss, val_acc = LSTMTrainer(src_data_path, epoch, dropout, lr, model_name,
+                                                    log_name, batch_size, n_classes, num).train_LSTM()
 
-                        elif net == "ConvLSTM":
-                            log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")
-                            model_name = os.path.join(res_dest, "model", net_string + ".pth")
-                            train_loss, val_loss, val_acc = ConvLSTMTrainer(src_data_path, epoch, dropout, lr, model_name,
-                                                log_name, batch_size, n_classes, num).train_convlstm()
+                            elif net == "ConvLSTM":
+                                log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")
+                                model_name = os.path.join(res_dest, "model", net_string + ".pth")
+                                train_loss, val_loss, val_acc = ConvLSTMTrainer(src_data_path, epoch, dropout, lr, model_name,
+                                                    log_name, batch_size, n_classes, num).train_convlstm()
 
-                        elif net == "BiLSTM":
-                            log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")
-                            model_name = os.path.join(res_dest, "model", net_string + ".pth")
-                            train_loss, val_loss, val_acc = BiLSTMTrainer(src_data_path, epoch, dropout, lr, model_name,
-                                                log_name, batch_size, n_classes, num).train_bilstm()
+                            elif net == "BiLSTM":
+                                log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")
+                                model_name = os.path.join(res_dest, "model", net_string + ".pth")
+                                train_loss, val_loss, val_acc = BiLSTMTrainer(src_data_path, epoch, dropout, lr, model_name,
+                                                    log_name, batch_size, n_classes, num).train_bilstm()
 
-                        elif net == "ConvGRU":
-                            log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")
-                            model_name = os.path.join(res_dest, "model", net_string + ".pth")
-                            train_loss, val_loss, val_acc = ConvGRUTrainer(src_data_path, epoch, dropout, lr, model_name,
-                                                log_name, batch_size, n_classes, num).train_convgru()
+                            elif net == "ConvGRU":
+                                log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")
+                                model_name = os.path.join(res_dest, "model", net_string + ".pth")
+                                train_loss, val_loss, val_acc = ConvGRUTrainer(src_data_path, epoch, dropout, lr, model_name,
+                                                    log_name, batch_size, n_classes, num).train_convgru()
 
-                        else:
-                            raise ValueError("Wrong model type")
+                            else:
+                                raise ValueError("Wrong model type")
 
-                        cost = time.time() - begin_time
-                        with open(log_name, "a+") as log:
-                            print("Total time cost is {}s\n".format(cost))
-                            log.write("\nTotal time cost is {}s\n".format(cost))
-                        res.write("{},{},{},{},{},{},{},{},{}\n".format(
-                            net_string + ".pth", net, epoch, dropout, lr, num, train_loss, val_loss, val_acc))
-                        # except:
-                        #     res.write("{},Error occurs when training!\n".format(net_string))
+                            cost = time.time() - begin_time
+                            with open(log_name, "a+") as log:
+                                print("Total time cost is {}s\n".format(cost))
+                                log.write("\nTotal time cost is {}s\n".format(cost))
+                            res.write("{},{},{},{},{},{},{},{},{}\n".format(
+                                net_string + ".pth", net, epoch, dropout, lr, num, train_loss, val_loss, val_acc))
+                        except:
+                            res.write("{},Error occurs when training!\n".format(net_string))
                         res.close()
