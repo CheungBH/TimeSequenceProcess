@@ -94,31 +94,31 @@ merge_comment = "Input test: swim, test100, test101, all samples, 30f, 10s"
 
 
 # Auto training config
-train_data_path = '5_input/input1'
-networks = ["LSTM"]
-out_dest = "6_network/LSTM_train"
-data_info = "net_1: The data comes from input1, all datas, label is {swim, drown}, 30 frames, 10 steps"
+train_data_path = '5_input/input1/equal'
+networks = ["ConvGRU", "BiLSTM", "TCN", "ConvLSTM", "LSTM"]
+out_dest = "6_network/tmp"
+data_info = "net1: The data comes from input1, all data, label is {swim, drown}, 30 frames, 10 steps"
 
-epoch_ls = {"LSTM": [1],
-            "TCN": [500, 1000],
-            "ConvLSTM": [300, ],
-            "ConvGRU": [2],
-            "BiLSTM": [2], }
+epoch_ls = {"LSTM": [200],
+            "TCN": [200],
+            "ConvLSTM": [100],
+            "ConvGRU": [100],
+            "BiLSTM": [100], }
 dropout_ls = {"LSTM": [0.2],
               "TCN": [0.05, 0.1],
-              "ConvLSTM": [""],
-              "ConvGRU": [""],
-              "BiLSTM": [""]
-              }  # ConvLSTM don't have any dropouts
+              "ConvLSTM": [0],
+              "ConvGRU": [0],
+              "BiLSTM": [0]
+              }  # ConvLSTM/ConvGRU/BiLSTM don't have any dropouts, do not change
 lr_ls = {"LSTM": [1e-4],
          "TCN": [1e-4],
          "ConvLSTM": [1e-4],
          "ConvGRU": [1e-4],
          "BiLSTM": [1e-4], }
 structure_ls = {
-    "ConvLSTM": [1,2],
-    "LSTM": [1],
-    "TCN": [1, 2, 3, 4, 5],
+    "ConvLSTM": [6],
+    "LSTM": [6, 7, 8],
+    "TCN": [6, 7, 8],
     "ConvGRU": [1],
     "BiLSTM": [1],
 }
@@ -142,7 +142,7 @@ label_main_folder = "7_test/train_v"
 
 
 # Auto testing config
-test_model_folder = "6_network/net_test/model"
+test_model_folder = "6_network/LSTM_train/model"
 test_video_folder = "7_test/train_v/video"
 test_label_folder = "7_test/train_v/label1"
 test_res_file = "8_result/result4/train_video_res.csv"

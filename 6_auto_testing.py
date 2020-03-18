@@ -195,6 +195,13 @@ def write_result(result, model_name, out, gt):
 
 
 if __name__ == '__main__':
+    print("\n\n\n\nChecking information...")
+    print("Your model folder --------> {}".format(model_folder))
+    print("Your video folder --------> {}".format(video_folder))
+    print("Your label folder --------> {}".format(label_folder))
+    print("Your result file name --------> {}".format(result_file))
+    input("Press any keys to continue")
+
     # t = Tester("tmp/models/TCN_struct1_2020-03-09-18-03-19.pth", "tmp/v_1/video/50_Trim.mp4",
     #            "tmp/v_1/label1/50_Trim.txt")
     # rslt = t.test()
