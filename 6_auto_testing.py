@@ -17,7 +17,12 @@ result_file = config.test_res_file
 label_folder = config.test_label_folder
 
 with open(os.path.join("/".join(model_folder.split("/")[:-1]), "cls.txt"), "r") as cls_file:
-    cls = [line for line in cls_file.readlines()]
+    cls = []
+    for line in cls_file.readlines():
+        if "\n" in line:
+            cls.append(line[:-1])
+        else:
+            cls.append(line)
 # cls = ["swim", "drown"]
 
 seq_length = config.testing_frame
@@ -198,7 +203,7 @@ if __name__ == '__main__':
     # test_result, model_name = AT.test()
     # write_result(test_result, model_name, "tmp/out_test.csv")
     os.makedirs("/".join(result_file.split('/')[:-1]), exist_ok=True)
-    AT = AutoTester("tmp/net_lstm/model", video_folder, label_folder)
+    AT = AutoTester(model_folder, video_folder, label_folder)
     test_result = AT.test()
     model_name = AT.model_name
     ground_truth = AT.label_dict
