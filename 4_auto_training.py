@@ -12,7 +12,7 @@ res_dest = config.out_dest
 src_data_path = config.train_data_path
 if os.path.exists(res_dest):
     inp = input("The destination path '{}' exists! Continue anyway? (Press n to stop)".format(res_dest))
-    if inp == "no":
+    if inp == "n":
         raise ValueError("The destination path '{}' exists!".format(res_dest))
 os.makedirs(os.path.join(res_dest, "model"), exist_ok=True)
 os.makedirs(os.path.join(res_dest, "log"), exist_ok=True)
