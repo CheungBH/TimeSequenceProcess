@@ -48,13 +48,14 @@ class CoordinateFolderProcessorReducePoint(CoordFolderProcessor):
     def __init__(self, clss, frm, stp):
         super().__init__(clss, frm, stp)
         self.selected_point = [1,2,5,6,7,8,9,10,11]
+        self.selected_coord = sorted([2*(num-1) for num in self.selected_point] +
+                                     [2*(num-1)+1 for num in self.selected_point])
 
     def process_line(self, file):
         lines = []
         txt = np.loadtxt(file)
-        for t in txt:
-            idx = [2*(num-1) for num in self.selected_point] + [2*(num-1)+1 for num in self.selected_point]
-            lines.append([t[i] for i in idx])
+        for line in txt:
+            lines.append([line[i] for i in self.selected_coord])
         return lines
 
 
