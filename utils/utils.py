@@ -18,6 +18,13 @@ def reverse_csv(path):
     data.to_csv(path, header=0)
 
 
+def numpy2str(array):
+    s = ''
+    for idx in range(len(array)):
+        s += str(array[idx])+'\t'
+    return s
+
+
 def __separate_sample(sample):
     data, label = [], []
     for item in sample:
@@ -74,8 +81,9 @@ class Utils(object):
 
 
 if __name__ == '__main__':
-    file = "../tmp/train_video_res.csv"
-    reverse_csv(file)
+    array = np.array([1,1,1,1,1])
+    string = numpy2str(array)
+    print(string)
     # ut = Utils()
     # # res = ut.time_to_string("10.0000")
     # # print(res)

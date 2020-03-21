@@ -78,7 +78,7 @@ video_process_class = ["drown", "swim"]
 # Coordinate process
 coord_step = 10
 coord_frame = 30
-coord_process_method = "ordinary"  #Do not change now
+coord_process_method = "cut_point"  #Do not change now
 coord_process_class = ["test100", "test101"]
 
 
@@ -95,11 +95,11 @@ merge_comment = "Input test: swim, test100, test101, all samples, 30f, 10s"
 
 # Auto training config
 train_data_path = '5_input/input1/equal'
-networks = ["ConvGRU", "BiLSTM", "TCN", "ConvLSTM", "LSTM"]
-out_dest = "6_network/tmp"
-data_info = "net1: The data comes from input1, all data, label is {swim, drown}, 30 frames, 10 steps"
+networks = ["LSTM"]
+out_dest = "6_network/net2"
+data_info = "net2: The data comes from input1, all data, label is {swim, drown}, 30 frames, 10 steps"
 
-epoch_ls = {"LSTM": [200, 100],
+epoch_ls = {"LSTM": [2],
             "TCN": [200, 100],
             "ConvLSTM": [100],
             "ConvGRU": [100],
@@ -116,9 +116,9 @@ lr_ls = {"LSTM": [1e-4],
          "ConvGRU": [1e-4],
          "BiLSTM": [1e-4], }
 structure_ls = {
-    "ConvLSTM": [6, 7],
-    "LSTM": [6, 7, 8],
-    "TCN": [6, 7, 8],
+    "ConvLSTM": [4, 5, 6],
+    "LSTM": [4, 5, 6, 7, 8],
+    "TCN": [4, 5, 6, 7, 8],
     "ConvGRU": [1, 2],
     "BiLSTM": [1, 2],
 }

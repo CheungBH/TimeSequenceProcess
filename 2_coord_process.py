@@ -1,5 +1,7 @@
 import config.config as c
 import os
+import numpy as np
+from utils.utils import numpy2str
 
 step = c.coord_step
 frame = c.coord_frame
@@ -18,19 +20,18 @@ class CoordFolderProcessor:
 
     def process_folder(self):
         for idx in range(len(self.coord_ls)):
-            self.process(self.coord_ls[idx], self.dest_ls[idx])
+            self.__process(self.coord_ls[idx], self.dest_ls[idx])
 
-    def process(self, coord_path, dest_path):
-        with open(coord_path, "r") as rf:
-            lines = [line for line in rf.readlines()]
-            rf.close()
+    def __process(self, coord_path, dest_path):
+        lines = self.process_line(coord_path)
 
         outs = []
         try:
             for begin_idx in range(len(lines))[::self.step]:
                 out = ""
                 for idx in range(self.frame):
-                    out += lines[begin_idx + idx].replace("\n", "\t")
+                    out += numpy2str(lines[begin_idx + idx])
+                    # out += lines[begin_idx + idx]
                 outs.append(out[:-1] + '\n')
         except IndexError:
             pass
@@ -39,10 +40,32 @@ class CoordFolderProcessor:
             for out in outs:
                 wf.write(out)
 
+    def process_line(self, file):
+        return np.loadtxt(file)
+
+
+class CoordinateFolderProcessorReducePoint(CoordFolderProcessor):
+    def __init__(self, clss, frm, stp):
+        super().__init__(clss, frm, stp)
+        self.selected_point = [1,2,5,6,7,8,9,10,11]
+
+    def process_line(self, file):
+        lines = []
+        txt = np.loadtxt(file)
+        for t in txt:
+            idx = [2*(num-1) for num in self.selected_point] + [2*(num-1)+1 for num in self.selected_point]
+            lines.append([t[i] for i in idx])
+        return lines
+
 
 if __name__ == '__main__':
     for cls in cls_ls:
         assert os.path.exists("3_coord/{}".format(cls)), "The coordinate folder doesn't exist! Please run " \
                                                          "‘video_process.py’ to generate the coordinate files first"
-        CFP = CoordFolderProcessor(cls, frame, step)
-        CFP.process_folder()
+        if method == "ordinary":
+            CFP = CoordFolderProcessor(cls, frame, step)
+            CFP.process_folder()
+        elif "point" in method:
+            CFPRP = CoordinateFolderProcessorReducePoint(cls, frame, step)
+            CFPRP.process_folder()
+
