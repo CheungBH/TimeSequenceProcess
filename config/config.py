@@ -19,6 +19,11 @@ fast_inference = True
 pose_batch = 80
 
 
+body_parts_ls = ["Nose", "Left eye", "Right eye", "Left ear", "Right ear", "Left shoulder", "Right shoulder", "Left elbow",
+              "Right elbow", "Left wrist", "Right wrist", "Left hip", "Right hip", "Left knee", "Right knee",
+              "Left ankle", "Right ankle"]
+body_part = {value: idx for idx, value in enumerate(body_parts_ls)}
+
 # TCN structure
 TCN_structure = {1:[[6, 6, 6, 6], 5, 2],
                  # [channel_size, kernel_size, dilation]
@@ -78,7 +83,7 @@ video_process_class = ["drown", "swim"]
 # Coordinate process
 coord_step = 10
 coord_frame = 30
-coord_process_method = "cut_point"  #Do not change now
+coord_process_method = "less body angle"  #Do not change now
 coord_process_class = ["test100", "test101"]
 
 
@@ -86,7 +91,7 @@ coord_process_class = ["test100", "test101"]
 # Merge input
 merge_step = 10
 merge_frame = 30
-merge_process_method = "ordinary"
+merge_process_method = "less body angle"
 merge_class = ["test100", "test101"]
 merge_dest_name = "input_test"
 merge_comment = "Input test: swim, test100, test101, all samples, 30f, 10s"
