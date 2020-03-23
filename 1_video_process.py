@@ -5,6 +5,7 @@ import os
 
 IP = ImgProcessor()
 store_size = size
+dest_folder = "2_kps_video"
 
 
 class VideoProcessor:
@@ -37,15 +38,16 @@ class VideoProcessor:
             # print("Current frame is {}".format(cnt))
             ret, frame = self.cap.read()
             if ret:
-                kps, img = IP.process_img(frame)
+                kps, img, black_img = IP.process_img(frame)
                 if kps:
                     self.coord = self.__normalize_coordinates(kps)
                     self.__write_txt()
 
                 resize = cv2.resize(img, store_size)
-                cv2.imwrite(os.path.join(self.draw_img, "{}.jpg".format(cnt)), resize)
+                resize_black = cv2.resize(black_img, store_size)
+                cv2.imwrite(os.path.join(self.draw_img, "{}.jpg".format(cnt)), resize_black)
                 # self.out.write(resize)
-                cv2.imshow("res", resize)
+                cv2.imshow("res", resize_black)
                 cv2.waitKey(2)
 
             else:
@@ -59,9 +61,9 @@ class VideoProcessor:
 class VideoFolderProcessor:
     def __init__(self, folder):
         self.video_ls = [os.path.join("1_video", folder, video_name) for video_name in os.listdir(os.path.join("1_video", folder))]
-        self.draw_video_folder = [path_name.replace("1_video", "2_drawn_video")[:-4] for path_name in self.video_ls]
+        self.draw_video_folder = [path_name.replace("1_video", dest_folder)[:-4] for path_name in self.video_ls]
         self.txt_ls = [(path_name.replace("1_video", "3_coord"))[:-4] + ".txt" for path_name in self.video_ls]
-        os.makedirs(os.path.join("2_drawn_video", folder), exist_ok=True)
+        os.makedirs(os.path.join(dest_folder, folder), exist_ok=True)
         os.makedirs(os.path.join("3_coord", folder), exist_ok=True)
         print("Processing video folder: {}".format(folder))
 

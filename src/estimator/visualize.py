@@ -51,7 +51,7 @@ class KeyPointVisualizer(object):
     def __visualize(self, frame, humans, scores, color):
         if color == "black":
             height, width = frame.shape[:2]
-            black = Image.open('img/black.jpg')
+            black = Image.open("src/black.jpg")
             black = np.asarray(black)
             bg = cv2.resize(black, (width, height))
         elif color == "origin":

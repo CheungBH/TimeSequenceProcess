@@ -3,6 +3,7 @@ from src.estimator.visualize import KeyPointVisualizer
 from src.estimator.nms import pose_nms
 from src.SPPE.src.main_fast_inference import *
 from src.estimator.datatset import Mscoco
+import cv2
 
 
 class PoseEstimator(object):
@@ -29,9 +30,10 @@ class PoseEstimator(object):
 
             if kps:
                 img = self.KPV.vis_ske(orig_img, kps, score)
-                return img, kps
+                img_black = self.KPV.vis_ske_black(orig_img, kps, score)
+                return img, kps, img_black
             else:
-                return orig_img, []
+                return orig_img, [], cv2.imread("src/black.jpg")
 
     def process_img(self, inps, orig_img, boxes, scores, pt1, pt2):
         try:
@@ -47,7 +49,7 @@ class PoseEstimator(object):
                 hm_j = self.pose_model(inps_j)
                 hm.append(hm_j)
             hm = torch.cat(hm).cpu().data
-            ske_img, skeleton = self.__get_skeleton(boxes, scores, hm, pt1, pt2, orig_img)
-            return skeleton, ske_img
+            ske_img, skeleton, black_img = self.__get_skeleton(boxes, scores, hm, pt1, pt2, orig_img)
+            return skeleton, ske_img, black_img
         except:
-            return [], orig_img, orig_img
+            return [], orig_img, cv2.imread("src/black.jpg")

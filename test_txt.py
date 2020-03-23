@@ -1,5 +1,5 @@
 from src.TCN.test_TCN import TCNPredictor
-# from src.LSTM.test_LSTM import LSTMPredictor
+from src.LSTM.test_LSTM import LSTMPredictor
 from src.ConvGRU.test_ConvGRU import ConvGRUPredictor
 from src.BiLSTM.test_BiLSTM import BiLSTMPredictor
 from collections import defaultdict
@@ -26,8 +26,8 @@ class txtTester:
             return BiLSTMPredictor(model, len(self.cls))
         if "ConvGRU" in model:
             return ConvGRUPredictor(model, len(self.cls))
-        # if 'LSTM' in model:
-        #     return LSTMPredictor(model)
+        if 'LSTM' in model:
+            return LSTMPredictor(model)
         if "TCN" in model:
             return TCNPredictor(model, len(self.cls))
 
@@ -43,7 +43,7 @@ class txtTester:
             print("Prediction of sample {} is {} ------> {}".format(cnt, self.cls[res], (res == l).tolist()[0][0]))
         print("Total acc is {}".format(round(correct/cnt, 2)))
         final_res.append(round(correct/cnt, 2))
-        for (k1,v1),(k2,v2) in zip(self.cnt.items(), self.correct.items()):
+        for (k1,v1), (k2,v2) in zip(self.cnt.items(), self.correct.items()):
             print("The acc of {} is {}".format(k1, round(v2/v1, 2)))
             final_res.append(round(v2/v1, 2))
         return final_res
@@ -60,7 +60,7 @@ class txtAutoTesting:
                     self.cls.append(line[:-1])
                 else:
                     self.cls.append(line)
-        title = ["TRAINING SAMPLE RESULT","overall acc"]
+        title = ["TRAINING SAMPLE RESULT", "overall acc"]
         for cls in self.cls:
             title.append("{} acc".format(cls))
         self.content = [title]
