@@ -81,7 +81,7 @@ class ImgprocessorAllKPS:
         with torch.no_grad():
             inps, orig_img, boxes, scores, pt1, pt2 = self.object_detector.process(frame)
             if boxes is not None:
-                key_points, img = self.pose_estimator.process_img(inps, orig_img, boxes, scores, pt1, pt2)
+                key_points, img, _ = self.pose_estimator.process_img(inps, orig_img, boxes, scores, pt1, pt2)
                 img = self.BBV.visualize(boxes, img)
                 if key_points:
                     id2ske, id2bbox = self.object_tracker.track(boxes, key_points)

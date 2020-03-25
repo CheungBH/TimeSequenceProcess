@@ -5,7 +5,7 @@ import os
 
 IP = ImgProcessor()
 store_size = size
-dest_folder = "2_kps_video"
+dest_folder = "2_frame"
 
 
 class VideoProcessor:
@@ -38,6 +38,7 @@ class VideoProcessor:
             # print("Current frame is {}".format(cnt))
             ret, frame = self.cap.read()
             if ret:
+                frame = cv2.resize(frame, store_size)
                 kps, img, black_img = IP.process_img(frame)
                 if kps:
                     self.coord = self.__normalize_coordinates(kps)
@@ -45,7 +46,7 @@ class VideoProcessor:
 
                 resize = cv2.resize(img, store_size)
                 resize_black = cv2.resize(black_img, store_size)
-                cv2.imwrite(os.path.join(self.draw_img, "{}.jpg".format(cnt)), resize_black)
+                cv2.imwrite(os.path.join(self.draw_img, "{}.jpg".format(cnt)), frame)
                 # self.out.write(resize)
                 cv2.imshow("res", resize_black)
                 cv2.waitKey(2)

@@ -136,7 +136,7 @@ class TCNTrainer:
             if val_loss < min_val_loss:
                 min_val_loss = val_loss
                 torch.save(self.model.state_dict(), self.name)
-                self.log.write("Model from {} epoch is saved".format(epoch))
+                self.log.write("Model from {} epoch is saved\n".format(epoch))
             max_val_acc = max(max_val_acc, val_acc)
         return min_train_loss, min_val_loss, max_val_acc
 

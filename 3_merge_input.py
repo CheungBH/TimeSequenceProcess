@@ -20,7 +20,7 @@ class InputMerger:
         self.label = open(os.path.join(self.dest_folder, "label.txt"), "w")
         with open(os.path.join(self.dest_folder, "cls.txt"), "w") as f:
             for cls in merge_class:
-                f.write(cls)
+                f.write(cls+'\n')
 
     def __merge_cls_input(self, label, data):
         for out in data:

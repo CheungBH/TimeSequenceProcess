@@ -171,9 +171,9 @@ class AutoLabelWithSameLabel(AutoLabel):
 
 
 if __name__ == '__main__':
-    videos = "tmp/csv_test"
-    labels = "label4"
+    # videos = videos
+    # labels = "label4"
     os.makedirs(os.path.join(videos, labels), exist_ok=True)
-    # AL = AutoLabel(videos, labels)
-    AL = AutoLabelWithSameLabel(videos, labels, "swim")
+    AL = AutoLabel(videos, labels)
+    # AL = AutoLabelWithSameLabel(videos, labels, "swim")
     AL.process()
