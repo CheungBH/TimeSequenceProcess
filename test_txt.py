@@ -1,5 +1,5 @@
 from src.TCN.test_TCN import TCNPredictor
-from src.LSTM.test_LSTM import LSTMPredictor
+# from src.LSTM.test_LSTM import LSTMPredictor
 from src.ConvGRU.test_ConvGRU import ConvGRUPredictor
 from src.BiLSTM.test_BiLSTM import BiLSTMPredictor
 from collections import defaultdict
@@ -66,7 +66,10 @@ class txtAutoTesting:
         self.content = [title]
 
     def process(self):
+        cnt = 0
         for model in self.models:
+            cnt += 1
+            print("----- Predicting [{}/{}]: {}".format(cnt, len(self.models), model))
             test = txtTester(self.data, model, self.cls)
             self.content.append(test.start())
 
@@ -84,9 +87,9 @@ if __name__ == '__main__':
     # result = txtT.start()
     # print(result)
 
-    models = "tmp/net1/model"
+    models = "6_network/net1/model"
     data = "5_input/input1"
-    output = "tmp/train_data_res.csv"
+    output = "8_result/result4/train_data_res.csv"
     tAT = txtAutoTesting(models, data)
     tAT.process()
     tAT.write_csv(output)

@@ -26,7 +26,7 @@ BiLSTM_params = config.BiLSTM_structure
 
 
 class BiLSTMTrainer:
-    def __init__(self, data_path, epoch, lr, dropout, model_name, log_name, batch_size, n_classes, struct_num):
+    def __init__(self, data_path, epoch, dropout, lr, model_name, log_name, batch_size, n_classes, struct_num):
         self.epoch = epoch
         self.batch_size = batch_size
         [hidden_dims, num_rnn_layers, attention] = BiLSTM_params[struct_num]
