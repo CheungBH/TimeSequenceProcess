@@ -5,8 +5,12 @@ from src.BiLSTM.test_BiLSTM import BiLSTMPredictor
 from collections import defaultdict
 from src.ConvLSTM.test_ConvLstm import ConvLSTMPredictor
 import numpy as np
+from config import config
 import os
 import csv
+
+kps = config.test_kps_num
+frame_length = config.testing_frame
 
 
 class txtTester:
@@ -36,7 +40,7 @@ class txtTester:
         for d, l in zip(self.data, self.label):
             cnt += 1
             self.cnt[self.cls[int(l)]] += 1
-            res = self.tester.predict(d.reshape(30,34).astype(np.float32))
+            res = self.tester.predict(d.reshape(frame_length, kps).astype(np.float32))
             if res == l:
                 correct += 1
                 self.correct[self.cls[int(l)]] += 1
@@ -69,7 +73,7 @@ class txtAutoTesting:
         cnt = 0
         for model in self.models:
             cnt += 1
-            print("----- Predicting [{}/{}]: {}".format(cnt, len(self.models), model))
+            print("\n----- Predicting [{}/{}]: {}".format(cnt, len(self.models), model))
             test = txtTester(self.data, model, self.cls)
             self.content.append(test.start())
 
@@ -87,9 +91,10 @@ if __name__ == '__main__':
     # result = txtT.start()
     # print(result)
 
-    models = "6_network/net1/model"
-    data = "5_input/input1"
+    models = "6_network/net4/model"
+    data = "5_input/input2/equal"
     output = "8_result/result4/train_data_res.csv"
+    os.makedirs(output.split("/")[1], exist_ok=True)
     tAT = txtAutoTesting(models, data)
     tAT.process()
     tAT.write_csv(output)

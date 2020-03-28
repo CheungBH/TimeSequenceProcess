@@ -38,7 +38,7 @@ class ConvLSTMPredictor(object):
         return data#(1, 30, 1, 17, 2)
 
     def predict(self, data):
-        input = self.get_input_data(data.reshape(-1,1,17,2))
+        input = self.get_input_data(data.reshape(-1,1,int(kps_num/2),2))
         output = self.model(input)
         #print('output:',output)
         pred = output.data.max(1, keepdim=True)[1]

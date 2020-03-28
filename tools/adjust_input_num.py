@@ -55,7 +55,7 @@ class AdjustInputClass:
 
 
 if __name__ == '__main__':
-    AIC = AdjustInputClass("../5_input/input4")
+    AIC = AdjustInputClass("../5_input/input2")
     AIC.adjust_sample()
 
 

@@ -79,10 +79,9 @@ BiLSTM_structure = {1: [64, 2, False],
 video_process_class = ["drown", "swim"]
 
 
-
 # Coordinate process
-coord_step = 5
-coord_frame = 30
+coord_step = 10
+coord_frame = 20
 coord_process_method = "ordinary"  #Do not change now
 coord_process_class = ["drown", "swim"]
 
@@ -97,18 +96,21 @@ merge_dest_name = "input4"
 merge_comment = "{}: [drown, swim], all samples, 20f, 10s, wrong posture has been deleted".format(merge_dest_name)
 
 
-
 # Auto training config
-train_data_path = '5_input/input4'
-networks = ["BiLSTM"]
-out_dest = "6_network/nettest"
-data_info = "{}: The data comes from {}, all data, [drown, swim], 30 frames, 3 steps".format(out_dest.split("/")[-1], train_data_path.split("/")[-1])
+train_data_path = '5_input/input2/equal'
+out_dest = "6_network/net4"
+data_info = "{}: The data comes from {}, equal data, [drown, swim], 30 frames, 5 steps".format(out_dest.split("/")[1],
+                                                                      "/".join(train_data_path.split("/")[1:]))
+network_name = ["ConvLSTM", "ConvGRU", "BiLSTM", "TCN", "LSTM"]
+network_num = [0, 1, 2, 3]
 
+
+networks = [network_name[idx] for idx in network_num]
 epoch_ls = {"LSTM": [2],
-            "TCN": [200, 100],
+            "TCN": [250],
             "ConvLSTM": [50],
-            "ConvGRU": [50],
-            "BiLSTM": [80], }
+            "ConvGRU": [80, 150],
+            "BiLSTM": [80, 150], }
 dropout_ls = {"LSTM": [0.2],
               "TCN": [0.05, 0.1],
               "ConvLSTM": [""],
@@ -121,20 +123,19 @@ lr_ls = {"LSTM": [1e-4],
          "ConvGRU": [1e-4],
          "BiLSTM": [1e-4], }
 structure_ls = {
-    "ConvLSTM": [1, 2, 3, ],
+    "ConvLSTM": [1, 2, 3],
     "LSTM": [4, 5, 6, 7, 8],
-    "TCN": [1, 2, 3, 4, 5],
-    "ConvGRU": [1, 2, 3],
-    "BiLSTM": [1, 2, 3],
+    "TCN": [1, 2, 3, 4, 5, 6],
+    "ConvGRU": [1, 2],
+    "BiLSTM": [1, 2],
 }
 
 batch_size = {"LSTM": 128, "TCN": 128, "ConvLSTM": 64, "ConvGRU": 128, "BiLSTM": 128}
 kps_num = 34
-training_frame = 30
+training_frame = 20
 log_interval = 5
 train_val_ratio = 0.2
 training_labels = {0: "drown", 1: "swim", }
-
 
 
 # Auto labelling config
@@ -145,15 +146,14 @@ label_folder_name = "label1"
 label_main_folder = "7_test/test_v"
 
 
-
 # Auto testing config
-test_model_folder = "6_network/net1/model"
+test_model_folder = "6_network/net3/model"
 test_video_folder = "7_test/train_v/video"
 test_label_folder = "7_test/train_v/label1"
-test_res_file = "8_result/result4/train_video_res.csv"
+test_res_file = "8_result/result2/train_video_res.csv"
 
 test_kps_num = 34
-testing_frame = 30
+testing_frame = 20
 
-test_comment = "{}: all the datas, swim and drown, 30 frames, 10 steps. Video coming from v_1, and label_1".\
+testing_log = "{}: all the datas, swim and drown, 30 frames, 10 steps. Video coming from v_1, and label_1".\
     format(test_res_file.split("/")[1])

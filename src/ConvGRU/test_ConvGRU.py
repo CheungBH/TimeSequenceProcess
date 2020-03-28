@@ -9,6 +9,7 @@ from config import config
 device = config.device
 ConvGRU_params = config.ConvGRU_structure
 kps_num = config.test_kps_num
+frame_length = config.testing_frame
 
 
 class ConvGRUPredictor(object):
@@ -37,7 +38,7 @@ class ConvGRUPredictor(object):
         return data#(1, 30, 34)
 
     def predict(self, data):
-        data = self.get_input_data(data.reshape(-1,1,17,2))
+        data = self.get_input_data(data.reshape(-1,1,int(kps_num/2),2))
         output = self.model(data)
         pred = output.data.max(1, keepdim=True)[1]
         return pred

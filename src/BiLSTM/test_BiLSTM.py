@@ -5,9 +5,11 @@ from src.BiLSTM.model import BILSTM
 import numpy as np
 import os
 from config import config
+
 device = config.device
 BiLSTM_params = config.BiLSTM_structure
 kps_num = config.test_kps_num
+frame_length = config.testing_frame
 
 
 class BiLSTMPredictor():
@@ -26,7 +28,7 @@ class BiLSTMPredictor():
         return data#(1, 30, 34)
 
     def predict(self, data):
-        data = self.get_input_data(data.reshape(30, 34))
+        data = self.get_input_data(data.reshape(frame_length, kps_num))
         output = self.model(data)
         pred = output.data.max(1, keepdim=True)[1]
         return pred
