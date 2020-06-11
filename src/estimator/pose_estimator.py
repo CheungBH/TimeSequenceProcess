@@ -1,9 +1,12 @@
 from config import config
 from src.estimator.visualize import KeyPointVisualizer
 from src.estimator.nms import pose_nms
-from src.SPPE.src.main_fast_inference import *
+# from src.SPPE.src.main_fast_inference import *
+import numpy as np
+import torch
 from src.estimator.datatset import Mscoco
 import cv2
+from utils.eval import getPrediction
 
 
 class PoseEstimator(object):
@@ -11,10 +14,18 @@ class PoseEstimator(object):
         self.skeleton = []
         self.KPV = KeyPointVisualizer()
         pose_dataset = Mscoco()
-        if config.fast_inference:
-            self.pose_model = InferenNet_fast(4 * 1 + 1, pose_dataset)
+        # if config.fast_inference:
+        #     self.pose_model = InferenNet_fast(4 * 1 + 1, pose_dataset)
+        # else:
+        #     self.pose_model = InferenNet(4 * 1 + 1, pose_dataset)
+        if config.pose_backbone == "seresnet101":
+            from models.seresnet.FastPose import InferenNet_fast as createModel
+            self.pose_model = createModel(4 * 1 + 1, pose_dataset, cfg=config.pose_cfg)
+        elif config.pose_backbone == "mobilenet":
+            from models.mobilenet.MobilePose import createModel
+            self.pose_model = createModel(cfg=config.pose_cfg)
         else:
-            self.pose_model = InferenNet(4 * 1 + 1, pose_dataset)
+            raise ValueError("Not a backbone!")
         self.pose_model.cuda()
         self.pose_model.eval()
         self.batch_size = config.pose_batch
@@ -36,7 +47,7 @@ class PoseEstimator(object):
                 return orig_img, [], cv2.imread("src/black.jpg")
 
     def process_img(self, inps, orig_img, boxes, scores, pt1, pt2):
-        try:
+        # try:
             datalen = inps.size(0)
             leftover = 0
             if (datalen) % self.batch_size:
@@ -51,5 +62,5 @@ class PoseEstimator(object):
             hm = torch.cat(hm).cpu().data
             ske_img, skeleton, black_img = self.__get_skeleton(boxes, scores, hm, pt1, pt2, orig_img)
             return skeleton, ske_img, black_img
-        except:
-            return [], orig_img, cv2.imread("src/black.jpg")
+        # except:
+        #     return [], orig_img, cv2.imread("src/black.jpg")

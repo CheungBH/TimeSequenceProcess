@@ -10,6 +10,9 @@ num_classes = 80
 nms_thresh = 0.33
 input_size = 416
 
+yolo_cfg = "src/yolo/cfg/yolov3-swim-416.cfg"
+yolo_weights = 'models/yolo/yolov3-swim-416_40000.weights'
+
 # For SPPE
 input_height = 320
 input_width = 256
@@ -18,6 +21,9 @@ output_width = 64
 fast_inference = True
 pose_batch = 80
 
+pose_backbone = "seresnet"
+pose_weight = './models/sppe/duc_se.pth'
+pose_cfg = None
 
 body_parts_ls = ["Nose", "Left eye", "Right eye", "Left ear", "Right ear", "Left shoulder", "Right shoulder", "Left elbow",
               "Right elbow", "Left wrist", "Right wrist", "Left hip", "Right hip", "Left knee", "Right knee",
