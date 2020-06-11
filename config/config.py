@@ -76,7 +76,7 @@ BiLSTM_structure = {1: [64, 2, False],
 
 
 # Video process
-video_process_class = ["drown", "swim"]
+video_process_class = ["drown_new", "swim_new"]
 
 
 # Coordinate process
@@ -84,6 +84,7 @@ coord_step = 10
 coord_frame = 20
 coord_process_method = "ordinary"  #Do not change now
 coord_process_class = ["drown", "swim"]
+
 
 
 
@@ -130,18 +131,19 @@ structure_ls = {
     "BiLSTM": [1, 2],
 }
 
-batch_size = {"LSTM": 128, "TCN": 128, "ConvLSTM": 64, "ConvGRU": 128, "BiLSTM": 128}
+batch_size = {"LSTM": 8, "TCN": 8, "ConvLSTM": 8, "ConvGRU": 8, "BiLSTM": 8}
 kps_num = 34
 training_frame = 20
 log_interval = 5
 train_val_ratio = 0.2
-training_labels = {0: "drown", 1: "swim", }
+training_labels = {0: "drown", 1: "swim" }
 
 
 # Auto labelling config
 label_comment = "label1: 30 frames, 2 classes: (swim, drown)"
 label_frame = 30
 label_cls = ["drown", "swim", ]
+<<<<<<< HEAD
 label_folder_name = "label1"
 label_main_folder = "7_test/test_v"
 
@@ -154,6 +156,7 @@ test_res_file = "8_result/result4/train_video_res.csv"
 
 test_kps_num = 34
 testing_frame = 20
+
 
 testing_log = "{}: all the datas, swim and drown, 30 frames, 10 steps. Video coming from v_1, and label_1".\
     format(test_res_file.split("/")[1])
