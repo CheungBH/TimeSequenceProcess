@@ -1,5 +1,5 @@
 from src.TCN.test_TCN import TCNPredictor
-# from src.LSTM.test_LSTM import LSTMPredictor
+from src.LSTM.test_LSTM import LSTMPredictor
 from src.ConvGRU.test_ConvGRU import ConvGRUPredictor
 from src.BiLSTM.test_BiLSTM import BiLSTMPredictor
 import cv2
@@ -144,8 +144,8 @@ class Tester:
 class AutoTester:
     def __init__(self, models, videos, labels):
         self.models = [os.path.join(models, m) for m in os.listdir(models)]
-        self.videos = [os.path.join(videos, v) for v in os.listdir(videos)]
-        self.labels = [os.path.join(labels, l) for l in os.listdir(labels)]
+        self.videos = sorted([os.path.join(videos, v) for v in os.listdir(videos)])
+        self.labels = sorted([os.path.join(labels, l) for l in os.listdir(labels)])
         self.final_res = defaultdict(list)
         self.model_name = []
         self.label_dict = defaultdict(bool)
