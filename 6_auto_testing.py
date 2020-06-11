@@ -15,6 +15,7 @@ model_folder = config.test_model_folder
 video_folder = config.test_video_folder
 result_file = config.test_res_file
 label_folder = config.test_label_folder
+test_log = config.testing_log
 
 with open(os.path.join("/".join(model_folder.split("/")[:-1]), "cls.txt"), "r") as cls_file:
     cls = []
@@ -23,7 +24,6 @@ with open(os.path.join("/".join(model_folder.split("/")[:-1]), "cls.txt"), "r") 
             cls.append(line[:-1])
         else:
             cls.append(line)
-# cls = ["swim", "drown"]
 
 seq_length = config.testing_frame
 IP = ImgProcessor()
@@ -215,6 +215,9 @@ if __name__ == '__main__':
     model_name = AT.model_name
     ground_truth = AT.label_dict
     write_result(test_result, model_name, result_file, ground_truth)
+
+    with open(os.path.join(result_file.split("/")[0], "description.txt"), "a+") as f:
+        f.write(test_log)
 
     # t.pred_dict["1"] = ["drown", "swim"]
     # t.pred_dict["2"] = ["drown"]
