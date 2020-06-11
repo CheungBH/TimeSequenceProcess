@@ -38,7 +38,6 @@ test/.coverage
 */*.so*
 */**/*.so*
 */**/*.dylib*
-test/data/legacy_serialized.pt
 *~
 .idea
 models
@@ -64,3 +63,4 @@ tmp
 *wtf.txt
 *__init__.py
 *LICENSE
+config/config.py
