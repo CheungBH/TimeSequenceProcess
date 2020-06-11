@@ -1,6 +1,6 @@
 import torch
 
-device = "cuda:0"
+device = "cpu"
 print("Using {}".format(device))
 size = (540, 360)
 
@@ -147,10 +147,10 @@ label_main_folder = "7_test/test_v"
 
 
 # Auto testing config
-test_model_folder = "6_network/net3/model"
+test_model_folder = "6_network/net4/model"
 test_video_folder = "7_test/train_v/video"
 test_label_folder = "7_test/train_v/label1"
-test_res_file = "8_result/result2/train_video_res.csv"
+test_res_file = "8_result/result4/train_video_res.csv"
 
 test_kps_num = 34
 testing_frame = 20

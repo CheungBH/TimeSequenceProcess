@@ -3,13 +3,8 @@ import torch
 from torch import nn
 from torch.autograd import Variable
 import torch.nn.functional as F
+from config.config import device
 
-use_cuda = torch.cuda.is_available()                   # check if GPU exists
-device = torch.device("cuda" if use_cuda else "cpu")   # use CPU or GPU
-if use_cuda:
-    print('use CUDA')
-else:
-    print('use CPU')
 
 class SelfAttention(nn.Module):
     def __init__(self, hidden_dim, height, width):
@@ -67,7 +62,10 @@ class ConvGRUCell(nn.Module):
                               bias=self.bias)
 
     def init_hidden(self, batch_size):
-        return torch.zeros(batch_size, self.hidden_dim, self.height, self.width).cuda()
+        if device != "cpu":
+            return torch.zeros(batch_size, self.hidden_dim, self.height, self.width).cuda()
+        else:
+            return torch.zeros(batch_size, self.hidden_dim, self.height, self.width)
 
     def forward(self, input_tensor, h_cur):
         """     

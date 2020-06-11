@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 import torch.nn.functional as F
+from config.config import device
+
 
 class SelfAttention(nn.Module):
     def __init__(self, hidden_dim, height, width):
@@ -53,8 +55,8 @@ class ConvLSTMCell(nn.Module):
         self.hidden_dim = hidden_dim
 
         self.kernel_size = kernel_size
-        self.padding     = kernel_size[0] // 2, kernel_size[1] // 2
-        self.bias        = bias
+        self.padding = kernel_size[0] // 2, kernel_size[1] // 2
+        self.bias = bias
         
         self.conv = nn.Conv2d(in_channels=self.input_dim + self.hidden_dim,
                               out_channels=4 * self.hidden_dim,
@@ -81,8 +83,12 @@ class ConvLSTMCell(nn.Module):
         return h_next, c_next
 
     def init_hidden(self, batch_size):
-        return (Variable(torch.zeros(batch_size, self.hidden_dim, self.height, self.width)).cuda(),
-                Variable(torch.zeros(batch_size, self.hidden_dim, self.height, self.width)).cuda())
+        if device != "cpu":
+            return (Variable(torch.zeros(batch_size, self.hidden_dim, self.height, self.width)).cuda(),
+                    Variable(torch.zeros(batch_size, self.hidden_dim, self.height, self.width)).cuda())
+        else:
+            return (Variable(torch.zeros(batch_size, self.hidden_dim, self.height, self.width)),
+                    Variable(torch.zeros(batch_size, self.hidden_dim, self.height, self.width)))
 
 
 class ConvLSTM(nn.Module):
@@ -215,6 +221,7 @@ class ConvLSTM(nn.Module):
         if not isinstance(param, list):
             param = [param] * num_layers
         return param
+
 
 if __name__ == '__main__':
     model = ConvLSTM(input_size=(17, 2),
