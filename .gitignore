@@ -40,7 +40,7 @@ test/.coverage
 */**/*.dylib*
 *~
 .idea
-models
+weights
 yolo
 SPPE
 log
