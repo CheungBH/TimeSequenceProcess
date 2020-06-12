@@ -68,8 +68,8 @@ class Tester:
             return BiLSTMPredictor(model, len(cls))
         if "ConvGRU" in model:
             return ConvGRUPredictor(model, len(cls))
-        # if 'LSTM' in model:
-        #     return LSTMPredictor(model)
+        if 'LSTM' in model:
+            return LSTMPredictor(model)
         if "TCN" in model:
             return TCNPredictor(model, len(cls))
 
