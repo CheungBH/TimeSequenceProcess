@@ -1,11 +1,11 @@
 from src.human_detection import ImgProcessor
 import cv2
-from config.config import video_process_class, size
+from config.config import video_process_class, size, save_frame, save_black_img, save_kps_img, save_kps_video
 import os
 
 IP = ImgProcessor()
 store_size = size
-dest_folder = "2_frame"
+dest_folder = "2_kps_video"
 
 
 class VideoProcessor:
@@ -13,9 +13,8 @@ class VideoProcessor:
         self.cap = cv2.VideoCapture(video_path)
         self.height, self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.coord = []
-        self.draw_img = draw_video_path
-
-        # self.out = cv2.VideoWriter(draw_video_path, cv2.VideoWriter_fourcc(*'XVID'), 10, store_size)
+        # self.draw_img = draw_video_path
+        self.out = cv2.VideoWriter(draw_video_path, cv2.VideoWriter_fourcc(*'XVID'), 10, store_size)
         self.file = open(output_txt_path, "w")
 
     def __normalize_coordinates(self, coordinates):
@@ -45,10 +44,10 @@ class VideoProcessor:
                     self.__write_txt()
 
                 resize = cv2.resize(img, store_size)
-                resize_black = cv2.resize(black_img, store_size)
-                cv2.imwrite(os.path.join(self.draw_img, "{}.jpg".format(cnt)), frame)
-                # self.out.write(resize)
-                cv2.imshow("res", resize_black)
+                # resize_black = cv2.resize(black_img, store_size)
+                # cv2.imwrite(os.path.join(self.draw_img, "{}.jpg".format(cnt)), frame)
+                self.out.write(resize)
+                cv2.imshow("res", resize)
                 cv2.waitKey(2)
 
             else:
@@ -62,7 +61,7 @@ class VideoProcessor:
 class VideoFolderProcessor:
     def __init__(self, folder):
         self.video_ls = [os.path.join("1_video", folder, video_name) for video_name in os.listdir(os.path.join("1_video", folder))]
-        self.draw_video_folder = [path_name.replace("1_video", dest_folder)[:-4] for path_name in self.video_ls]
+        self.draw_video_folder = [path_name.replace("1_video", dest_folder)[:-4]+".avi" for path_name in self.video_ls]
         self.txt_ls = [(path_name.replace("1_video", "3_coord"))[:-4] + ".txt" for path_name in self.video_ls]
         os.makedirs(os.path.join(dest_folder, folder), exist_ok=True)
         os.makedirs(os.path.join("3_coord", folder), exist_ok=True)
