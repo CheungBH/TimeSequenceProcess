@@ -1,6 +1,6 @@
 import torch
 
-device = "cpu"
+device = "cuda:0"
 print("Using {}".format(device))
 size = (540, 360)
 
@@ -10,8 +10,8 @@ num_classes = 80
 nms_thresh = 0.33
 input_size = 416
 
-yolo_cfg = "src/yolo/cfg/yolov3-swim-416.cfg"
-yolo_weights = 'models/yolo/yolov3-swim-416_40000.weights'
+yolo_cfg = "config/yolo_cfg/yolov3-swim-416.cfg"
+yolo_weights = 'weights/yolo/yolov3-swim-416_40000.weights'
 
 # For SPPE
 input_height = 320
@@ -21,14 +21,15 @@ output_width = 64
 fast_inference = True
 pose_batch = 80
 
-pose_backbone = "seresnet"
-pose_weight = './models/sppe/duc_se.pth'
+pose_backbone = "seresnet101"
+pose_weight = './weights/sppe/duc_se.pth'
 pose_cfg = None
 
 body_parts_ls = ["Nose", "Left eye", "Right eye", "Left ear", "Right ear", "Left shoulder", "Right shoulder", "Left elbow",
               "Right elbow", "Left wrist", "Right wrist", "Left hip", "Right hip", "Left knee", "Right knee",
               "Left ankle", "Right ankle"]
 body_part = {value: idx for idx, value in enumerate(body_parts_ls)}
+body_part_num = 17
 
 # TCN structure
 TCN_structure = {1:[[6, 6, 6, 6], 5, 2],
@@ -82,7 +83,11 @@ BiLSTM_structure = {1: [64, 2, False],
 
 
 # Video process
-video_process_class = ["drown", "swim"]
+video_process_class = ["test1", "test2"]
+save_kps_video = False
+save_kps_img = False
+save_black_img = False
+save_frame = False
 
 
 # Coordinate process
@@ -90,6 +95,7 @@ coord_step = 10
 coord_frame = 20
 coord_process_method = "ordinary"  #Do not change now
 coord_process_class = ["drown", "swim"]
+
 
 
 
@@ -136,12 +142,12 @@ structure_ls = {
     "BiLSTM": [1, 2],
 }
 
-batch_size = {"LSTM": 128, "TCN": 128, "ConvLSTM": 64, "ConvGRU": 128, "BiLSTM": 128}
+batch_size = {"LSTM": 8, "TCN": 8, "ConvLSTM": 8, "ConvGRU": 8, "BiLSTM": 8}
 kps_num = 34
 training_frame = 20
 log_interval = 5
 train_val_ratio = 0.2
-training_labels = {0: "drown", 1: "swim", }
+training_labels = {0: "drown", 1: "swim" }
 
 
 # Auto labelling config
@@ -159,7 +165,8 @@ test_label_folder = "7_test/train_v/label1"
 test_res_file = "8_result/result4/train_video_res.csv"
 
 test_kps_num = 34
-testing_frame = 20
+testing_frame = 30
+
 
 testing_log = "{}: all the datas, swim and drown, 30 frames, 10 steps. Video coming from v_1, and label_1".\
     format(test_res_file.split("/")[1])
