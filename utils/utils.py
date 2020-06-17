@@ -9,6 +9,12 @@ image_normalize_mean = [0.485, 0.456, 0.406]
 image_normalize_std = [0.229, 0.224, 0.225]
 
 
+def gray3D(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # cv2.imshow("gray", gray)
+    return cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
+
+
 def reverse_csv(path):
     df = pd.read_csv(path, "r")
     data = df.values  # data是数组，直接从文件读出来的数据格式是数组

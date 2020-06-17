@@ -7,6 +7,7 @@ import torch
 from src.tracker.sort import Sort
 import cv2
 import copy
+from utils.utils import gray3D
 
 Tensor = torch.cuda.FloatTensor
 
@@ -32,9 +33,14 @@ class ImgProcessor(object):
                 new_kp.append(kps[bdp][coord])
         return new_kp
 
-    def process_img(self, frame, get_id=1):
+    def process_img(self, frame, get_id=1, gray=False):
         with torch.no_grad():
-            inps, orig_img, boxes, scores, pt1, pt2 = self.object_detector.process(frame)
+            if gray:
+                gray_img = gray3D(copy.deepcopy(frame))
+                inps, orig_img, boxes, scores, pt1, pt2 = self.object_detector.process(gray_img)
+            else:
+                inps, orig_img, boxes, scores, pt1, pt2 = self.object_detector.process(frame)
+
             if boxes is not None:
                 key_points, img, kps_img = self.pose_estimator.process_img(inps, orig_img, boxes, scores, pt1, pt2)
                 img = self.BBV.visualize(boxes, img)

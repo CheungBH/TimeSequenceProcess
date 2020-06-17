@@ -1,6 +1,6 @@
 from src.human_detection import ImgProcessor
 import cv2
-from config.config import video_process_class, size, save_frame, save_black_img, save_kps_img, save_kps_video
+from config.config import video_process_class, size, save_frame, save_black_img, save_kps_img, save_kps_video, process_gray
 import os
 
 IP = ImgProcessor()
@@ -38,7 +38,11 @@ class VideoProcessor:
             ret, frame = self.cap.read()
             if ret:
                 frame = cv2.resize(frame, store_size)
-                kps, img, black_img = IP.process_img(frame)
+                if process_gray:
+                    kps, img, black_img = IP.process_img(frame, gray=True)
+                else:
+                    kps, img, black_img = IP.process_img(frame)
+
                 if kps:
                     self.coord = self.__normalize_coordinates(kps)
                     self.__write_txt()
