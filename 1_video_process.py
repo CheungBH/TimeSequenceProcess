@@ -38,7 +38,7 @@ class VideoProcessor:
             ret, frame = self.cap.read()
             if ret:
                 frame = cv2.resize(frame, store_size)
-                kps, img, black_img = IP.process_img(frame, gray=process_gray)
+                kps, img, black_img, box, ks = IP.process_img(frame, gray=process_gray)
 
                 if kps:
                     self.coord = self.__normalize_coordinates(kps)
@@ -70,6 +70,7 @@ class VideoFolderProcessor:
 
     def process_folder(self):
         for sv, kv, ot in zip(self.video_ls, self.kps_videos, self.txt_ls):
+            IP.init_sort()
             if os.path.exists(kv):
                 print("Video {} has been processed!".format(sv))
                 continue
@@ -77,11 +78,12 @@ class VideoFolderProcessor:
             # os.makedirs(dv,exist_ok=True)
             VP = VideoProcessor(sv, kv, ot)
             VP.process_video()
-            IP.init_sort()
+
             print("Finish processing video {}".format(sv))
 
 
 if __name__ == '__main__':
     for cls in video_process_class:
         VFP = VideoFolderProcessor(cls)
+        IP.init_sort()
         VFP.process_folder()

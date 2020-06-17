@@ -172,7 +172,7 @@ def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3):
 
 
 class Sort(object):
-  def __init__(self, max_age=50, min_hits=3):
+  def __init__(self, max_age=50, min_hits=1):
     """
     Sets key parameters for SORT
     """
@@ -183,6 +183,9 @@ class Sort(object):
 
   def init_KF(self):
     KalmanBoxTracker.count = 0
+    self.trackers = []
+    self.frame_count = 0
+    KalmanBoxTracker.id = 1
 
   def update(self,dets):
     """
