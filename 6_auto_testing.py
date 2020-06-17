@@ -124,7 +124,7 @@ class Tester:
             ret, frame = self.cap.read()
             if ret:
                 frame = cv2.resize(frame, store_size)
-                kps, img = IP.process_img(frame)
+                kps, img, _, box, kpScore = IP.process_img(frame)
                 if kps:
                     for key in kps:
                         coord = self.__normalize_coordinates(kps[key])

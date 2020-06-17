@@ -3,7 +3,8 @@ import math
 import cv2
 import torch
 import pandas as pd
-
+from collections import defaultdict
+from config import config
 
 image_normalize_mean = [0.485, 0.456, 0.406]
 image_normalize_std = [0.229, 0.224, 0.225]
@@ -84,6 +85,102 @@ class Utils(object):
             return math.acos(out) * (180 / math.pi)
         except ValueError:
             return 180
+
+
+
+def box2str(box):
+    sub_box = ""
+    for coor in box:
+        sub_box += str(coor)
+        sub_box += ","
+    return sub_box[:-1]
+
+
+def kp2str(kp):
+    sub_kp = ""
+    for item in kp:
+        sub_kp += str(item[0])
+        sub_kp += ","
+        sub_kp += str(item[1])
+        sub_kp += ","
+    return sub_kp[:-1]
+
+
+def kpScore2str(scores):
+    scores = scores.tolist()
+    sub_s = ""
+    for item in scores:
+        sub_s += str(item[0])
+        sub_s += ","
+    return sub_s[:-1]
+
+
+def str2boxdict(s):
+    d = defaultdict(list)
+    id_bboxs = s.split("\t")
+    for item in id_bboxs[:-1]:
+        [idx, box] = item.split(":")
+        bbox = box.split(",")
+        d[idx] = [int(float(b)) for b in bbox]
+    return d
+
+
+def str2kpsdict(s):
+    d = defaultdict(list)
+    id_kps = s.split("\t")
+    for item in id_kps[:-1]:
+        [idx, rawkps] = item.split(":")
+        kps_ls, kps = rawkps.split(","), []
+        for i in range(config.body_part_num):
+            kps.append([float(kps_ls[i*2]), float(kps_ls[i*2+1])])
+        d[idx] = kps
+    return d
+
+
+def boxdict2str(k, v):
+    boxstr = box2str(v)
+    return "{}:{}\t".format(str(k), boxstr)
+
+
+def kpsdict2str(k,v):
+    kpstr = kp2str(v)
+    return "{}:{}\t".format(str(k), kpstr)
+
+
+def str2box(string):
+    if string == "":
+        return None
+    tmp = string.split(",")
+    boxes = []
+    for item in tmp:
+        boxes.append([float(i) for i in item.split(" ")])
+    return boxes
+
+
+def str2kps(string):
+    if string == "":
+        return None
+    tmp = string.split(",")
+    boxes = []
+    for item in tmp:
+        boxes.append([float(i) for i in item.split(" ")])
+    return boxes
+
+
+def kpsScoredict2str(k,v):
+    kpstr = kpScore2str(v)
+    return "{}:{}\t".format(str(k), kpstr)
+
+
+def str2kpsScoredict(s):
+    d = defaultdict()
+    id_kps = s.split("\t")
+    for item in id_kps[:-1]:
+        [idx, raw_score] = item.split(":")
+        tmp = [[float(item)] for item in raw_score.split(",")]
+        score = torch.FloatTensor(tmp)
+        d[idx] = score
+    return d
 
 
 if __name__ == '__main__':

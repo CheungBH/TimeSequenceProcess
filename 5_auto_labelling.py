@@ -3,6 +3,7 @@ from src.human_detection import ImgprocessorAllKPS as ImgProcessor
 from collections import defaultdict
 import os
 from config import config
+from utils.utils import *
 
 cls = config.label_cls
 frame_length = config.label_frame
@@ -12,12 +13,13 @@ labels = config.label_folder_name
 
 IP = ImgProcessor()
 store_size = config.size
+write = config.write_label_info
 
 
 class LabelVideo:
     def __init__(self, video_path, label_path):
-        self.label_path = label_path
-        self.video_path = video_path
+        self.label_path = label_path.replace("\\", "/")
+        self.video_path = video_path.replace("\\", "/")
         self.idbox_cnt = defaultdict(int)
         self.label = defaultdict(list)
         self.cls = {str(idx): label for idx, label in enumerate(cls)}
@@ -26,6 +28,13 @@ class LabelVideo:
         for k, v in self.cls.items():
             self.cls_str += "{}-->{}, ".format(k,v)
         self.id_record = defaultdict(bool)
+        if write:
+            txt_folder = "/".join(self.video_path.split("/")[:-1]) + "_txt"
+            video_name = self.video_path.split("/")[-1][:-4]
+            os.makedirs(txt_folder, exist_ok=True)
+            self.box_txt = open(os.path.join(txt_folder, "{}_box.txt".format(video_name)), "w")
+            self.kps_score_txt = open(os.path.join(txt_folder, "{}_kp_score.txt".format(video_name)), "w")
+            self.kps_txt = open(os.path.join(txt_folder, "{}_kp.txt".format(video_name)), "w")
 
     def __put_cnt(self, img):
         for idx, (k, v) in enumerate(self.idbox_cnt.items()):
@@ -48,6 +57,37 @@ class LabelVideo:
     def next_id(self):
         return input("Please input the target id:")
 
+    def __write_box(self, boxes):
+        if boxes is not None:
+            if write:
+                box_str = ""
+                for k, v in boxes.items():
+                    box_str += boxdict2str(k, v)
+                self.box_txt.write(box_str)
+                self.box_txt.write("\n")
+        else:
+            if write:
+                self.box_txt.write("\n")
+
+    def __write_kps(self, kps, score):
+        if kps:
+            if write:
+                kps_str = ""
+                for k, v in kps.items():
+                    kps_str += kpsdict2str(k, v)
+                self.kps_txt.write(kps_str)
+                self.kps_txt.write("\n")
+
+                kps_score_str = ""
+                for k, v in score.items():
+                    kps_score_str += kpsScoredict2str(k, v)
+                self.kps_score_txt.write(kps_score_str)
+                self.kps_score_txt.write("\n")
+        else:
+            if write:
+                self.kps_txt.write("\n")
+                self.kps_score_txt.write("\n")
+
     def process(self):
         num = 1
         while True:
@@ -62,6 +102,10 @@ class LabelVideo:
                 if ret:
                     frame = cv2.resize(frame, store_size)
                     kps, img, _, box, kpScore = IP.process_img(frame)
+
+                    self.__write_box(box)
+                    self.__write_kps(kps, kpScore)
+
                     cv2.putText(img, "Frame cnt: {}".format(cnt), (300, 30), cv2.FONT_HERSHEY_SIMPLEX, 1,
                                 (255, 255, 255), 1)
                     if kps:
