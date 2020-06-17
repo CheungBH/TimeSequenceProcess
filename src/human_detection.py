@@ -8,6 +8,8 @@ from src.tracker.sort import Sort
 import cv2
 import copy
 from utils.utils import gray3D
+from src.detector.crop_box import crop_bbox
+
 
 Tensor = torch.cuda.FloatTensor
 
@@ -37,9 +39,11 @@ class ImgProcessor(object):
         with torch.no_grad():
             if gray:
                 gray_img = gray3D(copy.deepcopy(frame))
-                inps, orig_img, boxes, scores, pt1, pt2 = self.object_detector.process(gray_img)
+                orig_img, boxes, scores = self.object_detector.process(gray_img)
+                inps, orig_img, boxes, scores, pt1, pt2 = crop_bbox(frame, boxes, scores)
             else:
                 inps, orig_img, boxes, scores, pt1, pt2 = self.object_detector.process(frame)
+                inps, orig_img, boxes, scores, pt1, pt2 = crop_bbox(orig_img, boxes, scores)
 
             if boxes is not None:
                 key_points, img, kps_img = self.pose_estimator.process_img(inps, orig_img, boxes, scores, pt1, pt2)
