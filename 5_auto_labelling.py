@@ -61,7 +61,7 @@ class LabelVideo:
                 ret, frame = cap.read()
                 if ret:
                     frame = cv2.resize(frame, store_size)
-                    kps, img = IP.process_img(frame)
+                    kps, box, img = IP.process_img(frame)
                     cv2.putText(img, "Frame cnt: {}".format(cnt), (300, 30), cv2.FONT_HERSHEY_SIMPLEX, 1,
                                 (255, 255, 255), 1)
                     if kps:
