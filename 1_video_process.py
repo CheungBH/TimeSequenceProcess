@@ -38,10 +38,7 @@ class VideoProcessor:
             ret, frame = self.cap.read()
             if ret:
                 frame = cv2.resize(frame, store_size)
-                if process_gray:
-                    kps, img, black_img = IP.process_img(frame, gray=True)
-                else:
-                    kps, img, black_img = IP.process_img(frame)
+                kps, img, black_img = IP.process_img(frame, gray=process_gray)
 
                 if kps:
                     self.coord = self.__normalize_coordinates(kps)

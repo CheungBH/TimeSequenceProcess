@@ -42,8 +42,8 @@ class ImgProcessor(object):
                 orig_img, boxes, scores = self.object_detector.process(gray_img)
                 inps, orig_img, boxes, scores, pt1, pt2 = crop_bbox(frame, boxes, scores)
             else:
-                inps, orig_img, boxes, scores, pt1, pt2 = self.object_detector.process(frame)
-                inps, orig_img, boxes, scores, pt1, pt2 = crop_bbox(orig_img, boxes, scores)
+                orig_img, boxes, scores = self.object_detector.process(frame)
+                inps, orig_img, boxes, scores, pt1, pt2 = crop_bbox(frame, boxes, scores)
 
             if boxes is not None:
                 key_points, img, kps_img = self.pose_estimator.process_img(inps, orig_img, boxes, scores, pt1, pt2)
