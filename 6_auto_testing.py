@@ -34,8 +34,9 @@ store_size = config.size
 
 class Tester:
     def __init__(self, model_name, video_path, label_path):
+        model_name, video_path, label_path = model_name.replace("\\", "/"), video_path.replace("\\", "/"), label_path.replace("\\", "/")
         self.tester = self.__get_tester(model_name)
-        self.video_name = video_path.split("\\")[-1]
+        self.video_name = video_path.split("/")[-1]
         self.cap = cv2.VideoCapture(video_path)
         self.height, self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.kps_dict = defaultdict(list)
@@ -46,7 +47,7 @@ class Tester:
         self.res = defaultdict(bool)
         self.label_dict = defaultdict(bool)
         if write_video:
-            res_video = video_path.split("\\")[0] + "_" + model_name.split("\\")[-1][:-4] + "/" + self.video_name
+            res_video = "/".join(video_path.split("/")[:-1]) + "_" + model_name.split("/")[-1][:-4] + "/" + self.video_name
             self.out = cv2.VideoWriter(res_video, cv2.VideoWriter_fourcc(*'XVID'), 10, store_size)
 
     def __get_label(self, path):
@@ -167,6 +168,7 @@ class AutoTester:
         model_cnt = 0
         write_gt = True
         for model in self.models:
+            model = model.replace("\\", "/")
             model_cnt += 1
             model_res = defaultdict()
             if write_video:
