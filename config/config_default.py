@@ -2,7 +2,7 @@ import torch
 
 device = "cuda:0"
 print("Using {}".format(device))
-size = (540, 360)
+size = (720, 540)
 
 # For yolo
 confidence = 0.05
@@ -83,12 +83,12 @@ BiLSTM_structure = {1: [64, 2, False],
 
 
 # Video process
-video_process_class = ["test1", "test2"]
+video_process_class = ["mul"]
 save_kps_video = False
 save_kps_img = False
 save_black_img = False
 save_frame = False
-process_gray = True
+process_gray = False
 
 
 # Coordinate process
@@ -155,16 +155,17 @@ training_labels = {0: "drown", 1: "swim" }
 label_comment = "label1: 30 frames, 2 classes: (swim, drown)"
 label_frame = 30
 label_cls = ["drown", "swim", ]
-label_folder_name = "label1"
-label_main_folder = "7_test/test_v"
+label_folder_name = "label3"
+label_main_folder = "tmp/write_info"
+write_label_info = False
 
 
 # Auto testing config
-test_model_folder = "6_network/net4/model"
-test_video_folder = "7_test/train_v/video"
-test_label_folder = "7_test/train_v/label1"
+test_model_folder = "tmp/net9/model"
+test_video_folder = "tmp/train_v/video"
+test_label_folder = "tmp/train_v/label1"
 test_res_file = "8_result/result4/train_video_res.csv"
-test_write_video = False
+test_write_video = True
 
 test_kps_num = 34
 testing_frame = 30
