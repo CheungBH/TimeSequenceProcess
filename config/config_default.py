@@ -88,6 +88,7 @@ save_kps_video = False
 save_kps_img = False
 save_black_img = False
 save_frame = False
+process_gray = True
 
 
 # Coordinate process
@@ -163,6 +164,7 @@ test_model_folder = "6_network/net4/model"
 test_video_folder = "7_test/train_v/video"
 test_label_folder = "7_test/train_v/label1"
 test_res_file = "8_result/result4/train_video_res.csv"
+test_write_video = False
 
 test_kps_num = 34
 testing_frame = 30
