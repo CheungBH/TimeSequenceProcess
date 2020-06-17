@@ -1,5 +1,5 @@
 from src.TCN.test_TCN import TCNPredictor
-from src.LSTM.test_LSTM import LSTMPredictor
+# from src.LSTM.test_LSTM import LSTMPredictor
 from src.ConvGRU.test_ConvGRU import ConvGRUPredictor
 from src.BiLSTM.test_BiLSTM import BiLSTMPredictor
 import cv2
@@ -16,6 +16,8 @@ video_folder = config.test_video_folder
 result_file = config.test_res_file
 label_folder = config.test_label_folder
 test_log = config.testing_log
+write_video = config.test_write_video
+
 
 with open(os.path.join("/".join(model_folder.split("/")[:-1]), "cls.txt"), "r") as cls_file:
     cls = []
@@ -43,6 +45,9 @@ class Tester:
         self.pred_dict = defaultdict(list)
         self.res = defaultdict(bool)
         self.label_dict = defaultdict(bool)
+        if write_video:
+            res_video = video_path.split("\\")[0] + "_" + model_name.split("\\")[-1][:-4] + "/" + self.video_name
+            self.out = cv2.VideoWriter(res_video, cv2.VideoWriter_fourcc(*'XVID'), 10, store_size)
 
     def __get_label(self, path):
         with open(path, "r") as lf:
@@ -68,8 +73,8 @@ class Tester:
             return BiLSTMPredictor(model, len(cls))
         if "ConvGRU" in model:
             return ConvGRUPredictor(model, len(cls))
-        if 'LSTM' in model:
-            return LSTMPredictor(model)
+        # if 'LSTM' in model:
+        #     return LSTMPredictor(model)
         if "TCN" in model:
             return TCNPredictor(model, len(cls))
 
@@ -131,10 +136,12 @@ class Tester:
                 img = self.__put_cnt(img)
                 cv2.imshow("res", img)
                 cv2.waitKey(2)
-
+                if write_video:
+                    self.out.write(img)
             else:
                 self.cap.release()
                 IP.init_sort()
+                self.out.release()
                 cv2.destroyAllWindows()
                 break
         self.__compare()
@@ -143,6 +150,7 @@ class Tester:
 
 class AutoTester:
     def __init__(self, models, videos, labels):
+        self.video_path = videos
         self.models = [os.path.join(models, m) for m in os.listdir(models)]
         self.videos = sorted([os.path.join(videos, v) for v in os.listdir(videos)])
         self.labels = sorted([os.path.join(labels, l) for l in os.listdir(labels)])
@@ -161,6 +169,8 @@ class AutoTester:
         for model in self.models:
             model_cnt += 1
             model_res = defaultdict()
+            if write_video:
+                os.makedirs(self.video_path + "_" + model.split("\\")[-1][:-4], exist_ok=True)
             print("\n[{}/{}] ---> Testing model {}".format(model_cnt, len(self.models), model))
             self.model_name.append(model.split("\\")[-1])
             video_cnt = 0
