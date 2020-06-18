@@ -1,5 +1,9 @@
 from src.TCN.train_TCN import TCNTrainer
-# from src.LSTM.train_LSTM import LSTMTrainer
+try:
+    from src.LSTM.train_LSTM import LSTMTrainer
+    lstm = True
+except:
+    lstm = False
 from src.ConvLSTM.train_ConvLSTM import ConvLSTMTrainer
 from src.BiLSTM.train_BiLSTM import BiLSTMTrainer
 from src.ConvGRU.train_ConvGRU import ConvGRUTrainer
@@ -66,12 +70,15 @@ if __name__ == '__main__':
                                                 log_name, batch_size, n_classes, num).train_tcn()
 
                         elif net == "LSTM":
-                            log_name = os.path.join(res_dest, "log", net_string + ".csv")
-                            model_name = os.path.join(res_dest, "model", net_string + ".h5")
-                            os.makedirs(os.path.join(res_dest, "LSTM_graph/loss"), exist_ok=True)
-                            os.makedirs(os.path.join(res_dest, "LSTM_graph/acc"), exist_ok=True)
-                            train_loss, val_loss, val_acc = LSTMTrainer(src_data_path, epoch, dropout, lr, model_name,
-                                                log_name, batch_size, n_classes, num).train_LSTM()
+                            if lstm:
+                                log_name = os.path.join(res_dest, "log", net_string + ".csv")
+                                model_name = os.path.join(res_dest, "model", net_string + ".h5")
+                                os.makedirs(os.path.join(res_dest, "LSTM_graph/loss"), exist_ok=True)
+                                os.makedirs(os.path.join(res_dest, "LSTM_graph/acc"), exist_ok=True)
+                                train_loss, val_loss, val_acc = LSTMTrainer(src_data_path, epoch, dropout, lr, model_name,
+                                                    log_name, batch_size, n_classes, num).train_LSTM()
+                            else:
+                                print("lstm is not usable")
 
                         elif net == "ConvLSTM":
                             log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")

@@ -1,5 +1,9 @@
 from src.TCN.test_TCN import TCNPredictor
-# from src.LSTM.test_LSTM import LSTMPredictor
+try:
+    from src.LSTM.test_LSTM import LSTMPredictor
+    lstm = True
+except:
+    lstm = False
 from src.ConvGRU.test_ConvGRU import ConvGRUPredictor
 from src.BiLSTM.test_BiLSTM import BiLSTMPredictor
 import cv2
@@ -74,8 +78,11 @@ class Tester:
             return BiLSTMPredictor(model, len(cls))
         if "ConvGRU" in model:
             return ConvGRUPredictor(model, len(cls))
-        # if 'LSTM' in model:
-        #     return LSTMPredictor(model)
+        if 'LSTM' in model:
+            if lstm:
+                return LSTMPredictor(model)
+            else:
+                print("lstm is not usable")
         if "TCN" in model:
             return TCNPredictor(model, len(cls))
 
