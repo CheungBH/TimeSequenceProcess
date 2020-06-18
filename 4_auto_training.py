@@ -79,6 +79,7 @@ if __name__ == '__main__':
                                                     log_name, batch_size, n_classes, num).train_LSTM()
                             else:
                                 print("lstm is not usable")
+                                continue
 
                         elif net == "ConvLSTM":
                             log_name = os.path.join(res_dest, "log", net_string + time_str + ".txt")
