@@ -2,7 +2,7 @@ from src.human_detection import HumanDetection
 import cv2
 from config.config import video_process_class, size, save_frame, save_black_img, save_kps_img, save_kps_video, process_gray
 import os
-from utils.utils import select_kps, dim2to1
+from utils.kp_process import KPSProcessor
 
 IP = HumanDetection()
 store_size = size
@@ -12,21 +12,11 @@ dest_folder = "2_kps_video"
 class VideoProcessor:
     def __init__(self, video_path, draw_video_path, output_txt_path):
         self.cap = cv2.VideoCapture(video_path)
-        self.height, self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.coord = []
         # self.draw_img = draw_video_path
         self.out = cv2.VideoWriter(draw_video_path, cv2.VideoWriter_fourcc(*'XVID'), 10, store_size)
         self.file = open(output_txt_path, "w")
-
-    def __normalize_coordinates(self, coordinates):
-        coordinates = select_kps(1, coordinates)
-        coordinates = dim2to1(coordinates)
-        for i in range(len(coordinates)):
-            if (i+1) % 2 == 0:
-                coordinates[i] = coordinates[i] / self.height
-            else:
-                coordinates[i] = coordinates[i] / self.width
-        return coordinates
+        self.KPSP = KPSProcessor(int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)))
 
     def __write_txt(self):
         for item in self.coord:
@@ -45,7 +35,7 @@ class VideoProcessor:
                 img, black_img = IP.visualize()
 
                 if kps:
-                    self.coord = self.__normalize_coordinates(kps)
+                    self.coord = self.KPSP.process_single_kps(kps, 1)
                     self.__write_txt()
 
                 resize = cv2.resize(img, store_size)

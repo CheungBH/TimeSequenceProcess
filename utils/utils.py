@@ -10,21 +10,6 @@ image_normalize_mean = [0.485, 0.456, 0.406]
 image_normalize_std = [0.229, 0.224, 0.225]
 
 
-def select_kps(idx, kps):
-    if idx in kps.keys():
-        return kps[idx]
-    else:
-        return [[]]
-
-
-def dim2to1(raw_kp):
-    kp = []
-    for pt in raw_kp:
-        for dim in pt:
-            kp.append(dim)
-    return kp
-
-
 def reverse_csv(path):
     df = pd.read_csv(path, "r")
     data = df.values  # data是数组，直接从文件读出来的数据格式是数组
