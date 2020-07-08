@@ -64,14 +64,6 @@ class Tester:
                 labels[idx] = [l for l in label.split(" ")]
                 ids.append(idx)
         return labels, ids
-    #
-    # def __normalize_coordinates(self, coordinates):
-    #     for i in range(len(coordinates)):
-    #         if (i+1) % 2 == 0:
-    #             coordinates[i] = coordinates[i] / self.height
-    #         else:
-    #             coordinates[i] = coordinates[i] / self.width
-    #     return coordinates
 
     def __get_tester(self, model):
         if "ConvLSTM" in model:

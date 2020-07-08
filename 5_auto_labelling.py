@@ -1,8 +1,6 @@
 import cv2
-from src.human_detection import ImgprocessorAllKPS as ImgProcessor
-from collections import defaultdict
+from src.human_detection import HumanDetection
 import os
-from config import config
 from utils.utils import *
 
 cls = config.label_cls
@@ -11,7 +9,7 @@ comment = config.label_comment
 videos = config.label_main_folder
 labels = config.label_folder_name
 
-IP = ImgProcessor()
+IP = HumanDetection()
 store_size = config.size
 write = config.write_label_info
 
@@ -101,7 +99,8 @@ class LabelVideo:
                 ret, frame = cap.read()
                 if ret:
                     frame = cv2.resize(frame, store_size)
-                    kps, img, _, box, kpScore = IP.process_img(frame)
+                    kps, box, kpScore = IP.process_img(frame)
+                    img, _ = IP.visualize()
 
                     self.__write_box(box)
                     self.__write_kps(kps, kpScore)
