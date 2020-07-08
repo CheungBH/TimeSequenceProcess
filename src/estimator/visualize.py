@@ -2,6 +2,7 @@ import torch
 import cv2
 from PIL import Image
 import numpy as np
+from config.config import pose_cls
 
 RED = (0, 0, 255)
 GREEN = (0, 255, 0)
@@ -11,12 +12,32 @@ YELLOW = (0, 255, 255)
 ORANGE = (0, 165, 255)
 PURPLE = (255, 0, 255)
 
-coco_l_pair = [
-    (0, 1), (0, 2), (1, 3), (2, 4),  # Head
-    (5, 6), (5, 7), (7, 9), (6, 8), (8, 10),
-    (17, 11), (17, 12),  # Body
-    (11, 13), (12, 14), (13, 15), (14, 16)
-]
+if pose_cls == 13:
+    coco_l_pair = [
+        (1, 2), (1, 3), (3, 5), (2, 4), (4, 6),
+        (13, 7), (13, 8), (0, 13),  # Body
+        (7, 9), (8, 10), (9, 11), (10, 12)
+    ]
+    mpii_l_pair = [
+        (8, 9), (11, 12), (11, 10), (2, 1), (1, 0),
+        (13, 14), (14, 15), (3, 4), (4, 5),
+        (8, 7), (7, 6), (6, 2), (6, 3), (8, 12), (8, 13)
+    ]
+elif pose_cls == 17:
+    coco_l_pair = [
+        (0, 1), (0, 2), (1, 3), (2, 4),  # Head
+        (5, 6), (5, 7), (7, 9), (6, 8), (8, 10),
+        (17, 11), (17, 12),  # Body
+        (11, 13), (12, 14), (13, 15), (14, 16)
+    ]
+    mpii_l_pair = [
+        (8, 9), (11, 12), (11, 10), (2, 1), (1, 0),
+        (13, 14), (14, 15), (3, 4), (4, 5),
+        (8, 7), (7, 6), (6, 2), (6, 3), (8, 12), (8, 13)
+    ]
+else:
+    raise ValueError("Wrong number")
+
 coco_p_color = [(0, 255, 255), (0, 191, 255), (0, 255, 102), (0, 77, 255), (0, 255, 0),  # Nose, LEye, REye, LEar, REar
            (77, 255, 255), (77, 255, 204), (77, 204, 255), (191, 255, 77), (77, 191, 255), (191, 255, 77),
            # LShoulder, RShoulder, LElbow, RElbow, LWrist, RWrist
@@ -26,11 +47,7 @@ coco_line_color = [(0, 215, 255), (0, 255, 204), (0, 134, 255), (0, 255, 50),
               (77, 255, 222), (77, 196, 255), (77, 135, 255), (191, 255, 77), (77, 255, 77),
               (77, 222, 255), (255, 156, 127),
               (0, 127, 255), (255, 127, 77), (0, 77, 255), (255, 77, 36)]
-mpii_l_pair = [
-    (8, 9), (11, 12), (11, 10), (2, 1), (1, 0),
-    (13, 14), (14, 15), (3, 4), (4, 5),
-    (8, 7), (7, 6), (6, 2), (6, 3), (8, 12), (8, 13)
-]
+
 mpii_p_color = [PURPLE, BLUE, BLUE, RED, RED, BLUE, BLUE, RED, RED, PURPLE, PURPLE, PURPLE, RED, RED, BLUE, BLUE]
 mpii_line_color = [PURPLE, BLUE, BLUE, RED, RED, BLUE, BLUE, RED, RED, PURPLE, PURPLE, RED, RED, BLUE, BLUE]
 
@@ -51,7 +68,7 @@ class KeyPointVisualizer(object):
     def __visualize(self, frame, humans, scores, color):
         if color == "black":
             height, width = frame.shape[:2]
-            black = Image.open("src/black.jpg")
+            black = Image.open('src/black.jpg')
             black = np.asarray(black)
             bg = cv2.resize(black, (width, height))
         elif color == "origin":
@@ -63,8 +80,14 @@ class KeyPointVisualizer(object):
             part_line = {}
             kp_preds = humans[idx]
             kp_scores = scores[idx]
-            kp_preds = torch.cat((kp_preds, torch.unsqueeze((kp_preds[5, :] + kp_preds[6, :]) / 2, 0)))
-            kp_scores = torch.cat((kp_scores, torch.unsqueeze((kp_scores[5, :] + kp_scores[6, :]) / 2, 0)))
+
+            if pose_cls == 17:
+                kp_preds = torch.cat((kp_preds, torch.unsqueeze((kp_preds[5, :] + kp_preds[6, :]) / 2, 0)))
+                kp_scores = torch.cat((kp_scores, torch.unsqueeze((kp_scores[5, :] + kp_scores[6, :]) / 2, 0)))
+            elif pose_cls == 13:
+                kp_preds = torch.cat((kp_preds, torch.unsqueeze((kp_preds[1, :] + kp_preds[2, :]) / 2, 0)))
+                kp_scores = torch.cat((kp_scores, torch.unsqueeze((kp_scores[1, :] + kp_scores[2, :]) / 2, 0)))
+
             # Draw keypoints
             for n in range(kp_scores.shape[0]):
                 if kp_scores[n] <= 0.05:
@@ -81,7 +104,28 @@ class KeyPointVisualizer(object):
         return bg
 
     def vis_ske(self, frame, humans, scores):
+        if isinstance(humans, dict):
+            humans, scores = self.dict2ls(humans), self.dict2ls(scores)
         return self.__visualize(frame, humans, scores, "origin")
 
     def vis_ske_black(self, frame, humans, scores):
+        if isinstance(humans, dict):
+            humans, scores = self.dict2ls(humans), self.dict2ls(scores)
         return self.__visualize(frame, humans, scores, "black")
+
+    def dict2ls(self, d):
+        return [torch.FloatTensor(v) for k, v in d.items()]
+
+    def kpsdic2tensor(self, kps_dict, kpsScore_dict):
+        ls_kp, ls_score = [], []
+        for k, v in kps_dict.items():
+            ls_kp.append(v)
+            ls_score.append(kpsScore_dict[k])
+        # ls = [v for k, v in d.items()]
+        # score_temp = torch.FloatTensor([0.999]*pose_cls).unsqueeze(dim=1)
+        return torch.FloatTensor(ls_kp), ls_score
+
+    def scoredict2tensor(self, d):
+        pass
+
+

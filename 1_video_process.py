@@ -1,9 +1,10 @@
-from src.human_detection import ImgProcessor
+from src.human_detection import HumanDetection
 import cv2
 from config.config import video_process_class, size, save_frame, save_black_img, save_kps_img, save_kps_video, process_gray
 import os
+from utils.utils import select_kps, dim2to1
 
-IP = ImgProcessor()
+IP = HumanDetection()
 store_size = size
 dest_folder = "2_kps_video"
 
@@ -18,6 +19,8 @@ class VideoProcessor:
         self.file = open(output_txt_path, "w")
 
     def __normalize_coordinates(self, coordinates):
+        coordinates = select_kps(1, coordinates)
+        coordinates = dim2to1(coordinates)
         for i in range(len(coordinates)):
             if (i+1) % 2 == 0:
                 coordinates[i] = coordinates[i] / self.height
@@ -38,7 +41,8 @@ class VideoProcessor:
             ret, frame = self.cap.read()
             if ret:
                 frame = cv2.resize(frame, store_size)
-                kps, img, black_img, box, ks = IP.process_img(frame, gray=process_gray)
+                kps, box, ks = IP.process_img(frame, gray=process_gray)
+                img, black_img = IP.visualize()
 
                 if kps:
                     self.coord = self.__normalize_coordinates(kps)

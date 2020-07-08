@@ -5,7 +5,8 @@ import torch.nn as nn
 import torch.nn.functional as F 
 from torch.autograd import Variable
 import numpy as np
-import cv2 
+import cv2
+from config.config import device
 import matplotlib.pyplot as plt
 try:
     from .util import count_parameters as count
@@ -317,7 +318,10 @@ class Darknet(nn.Module):
         return self.module_list
 
                 
-    def forward(self, x, CUDA):
+    def forward(self, x):
+
+        CUDA = False if device == "cpu" else True
+
         detections = []
         modules = self.blocks[1:]
         outputs = {}   #We cache the outputs for the route layer

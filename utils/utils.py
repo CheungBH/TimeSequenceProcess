@@ -10,10 +10,19 @@ image_normalize_mean = [0.485, 0.456, 0.406]
 image_normalize_std = [0.229, 0.224, 0.225]
 
 
-def gray3D(img):
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # cv2.imshow("gray", gray)
-    return cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
+def select_kps(idx, kps):
+    if idx in kps.keys():
+        return kps[idx]
+    else:
+        return [[]]
+
+
+def dim2to1(raw_kp):
+    kp = []
+    for pt in raw_kp:
+        for dim in pt:
+            kp.append(dim)
+    return kp
 
 
 def reverse_csv(path):

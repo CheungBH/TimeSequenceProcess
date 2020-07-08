@@ -1,9 +1,9 @@
 from src.estimator.opt import opt
-try:
-    from utils.img import transformBoxInvert, transformBoxInvert_batch, findPeak, processPeaks
-except ImportError:
-    from src.SPPE.src.utils.img import transformBoxInvert, transformBoxInvert_batch, findPeak, processPeaks
+from .img import transformBoxInvert, transformBoxInvert_batch, findPeak, processPeaks
 import torch
+from config.config import pose_cls
+
+opt.nClasses = pose_cls
 
 
 class DataLogger(object):
