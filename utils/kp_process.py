@@ -40,8 +40,10 @@ class KPSProcessor:
         coord = self.__normalize_coordinates(kp)
         return coord
 
-    def process_all_kps(self, kps):
-        pass
+    def process_kp(self, kp):
+        kp = self.__dim2to1(kp)
+        coord = self.__normalize_coordinates(kp)
+        return coord
 
 
 

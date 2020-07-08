@@ -9,10 +9,11 @@ from src.BiLSTM.test_BiLSTM import BiLSTMPredictor
 import cv2
 from collections import defaultdict
 from src.ConvLSTM.test_ConvLstm import ConvLSTMPredictor
-from src.human_detection import ImgprocessorAllKPS as ImgProcessor
+from src.human_detection import HumanDetection as ImgProcessor
 import numpy as np
 from config import config
 import os
+from utils.kp_process import KPSProcessor
 import csv
 
 model_folder = config.test_model_folder
@@ -44,6 +45,7 @@ class Tester:
         self.cap = cv2.VideoCapture(video_path)
         self.height, self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.kps_dict = defaultdict(list)
+        self.KPSP = KPSProcessor(self.height, self.width)
         self.label, self.test_id = self.__get_label(label_path)
         self.coord = []
         self.pred = defaultdict(str)
@@ -62,14 +64,14 @@ class Tester:
                 labels[idx] = [l for l in label.split(" ")]
                 ids.append(idx)
         return labels, ids
-
-    def __normalize_coordinates(self, coordinates):
-        for i in range(len(coordinates)):
-            if (i+1) % 2 == 0:
-                coordinates[i] = coordinates[i] / self.height
-            else:
-                coordinates[i] = coordinates[i] / self.width
-        return coordinates
+    #
+    # def __normalize_coordinates(self, coordinates):
+    #     for i in range(len(coordinates)):
+    #         if (i+1) % 2 == 0:
+    #             coordinates[i] = coordinates[i] / self.height
+    #         else:
+    #             coordinates[i] = coordinates[i] / self.width
+    #     return coordinates
 
     def __get_tester(self, model):
         if "ConvLSTM" in model:
@@ -131,10 +133,12 @@ class Tester:
             ret, frame = self.cap.read()
             if ret:
                 frame = cv2.resize(frame, store_size)
-                kps, img, _, box, kpScore = IP.process_img(frame)
+                kps, box, kpScore = IP.process_img(frame)
+                img, _ = IP.visualize()
                 if kps:
-                    for key in kps:
-                        coord = self.__normalize_coordinates(kps[key])
+                    for key, v in kps.items():
+                        # coord = self.__normalize_coordinates(kps[key])
+                        coord = self.KPSP.process_kp(v)
                         self.kps_dict[key].append(coord)
                     self.__detect_kps()
 
@@ -179,7 +183,7 @@ class AutoTester:
             model_cnt += 1
             model_res = defaultdict()
             if write_video:
-                os.makedirs(self.video_path + "_" + model.split("\\")[-1][:-4], exist_ok=True)
+                os.makedirs(self.video_path + "_" + model.split("/")[-1][:-4], exist_ok=True)
             print("\n[{}/{}] ---> Testing model {}".format(model_cnt, len(self.models), model))
             self.model_name.append(model.split("\\")[-1])
             video_cnt = 0
