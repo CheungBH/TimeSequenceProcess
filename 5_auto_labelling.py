@@ -31,8 +31,8 @@ class LabelVideo:
             video_name = self.video_path.split("/")[-1][:-4]
             os.makedirs(txt_folder, exist_ok=True)
             self.box_txt = open(os.path.join(txt_folder, "{}_box.txt".format(video_name)), "w")
-            self.kps_score_txt = open(os.path.join(txt_folder, "{}_kp_score.txt".format(video_name)), "w")
-            self.kps_txt = open(os.path.join(txt_folder, "{}_kp.txt".format(video_name)), "w")
+            self.kps_score_txt = open(os.path.join(txt_folder, "{}_kps_score.txt".format(video_name)), "w")
+            self.kps_txt = open(os.path.join(txt_folder, "{}_kps.txt".format(video_name)), "w")
 
     def __put_cnt(self, img):
         for idx, (k, v) in enumerate(self.idbox_cnt.items()):
