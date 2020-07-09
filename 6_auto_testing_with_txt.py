@@ -36,7 +36,7 @@ with open(os.path.join("/".join(model_folder.split("/")[:-1]), "cls.txt"), "r") 
             cls.append(line)
 
 seq_length = config.testing_frame
-IP = ImgProcessor()
+# IP = ImgProcessor()
 store_size = config.size
 
 
@@ -163,7 +163,7 @@ class Tester:
                     self.out.write(img)
             else:
                 self.cap.release()
-                IP.init_sort()
+                # IP.init_sort()
                 self.out.release()
                 cv2.destroyAllWindows()
                 break
