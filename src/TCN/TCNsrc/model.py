@@ -15,3 +15,6 @@ class TCN(nn.Module):
         #y1 = self.linear(y1)
         o = self.linear(y1[:, :, -1])
         return F.log_softmax(o, dim=1)
+        #print((F.sigmoid(o))*o)
+
+        #return (F.sigmoid(o))*o

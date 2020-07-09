@@ -126,7 +126,7 @@ class LSTMTrainer:
         callbacks_list = [csv_logger, reduce_lr]
         self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         data, target = self.__load_data()
-        train_x, test_x, train_y, test_y = train_test_split(data, target, test_size=0.2, random_state=1, shuffle=True)
+        train_x, test_x, train_y, test_y = train_test_split(data, target, test_size=config.train_val_ratio, random_state=1, shuffle=True)
         hist = self.model.fit(x=train_x, y=train_y, batch_size=self.batch_size, epochs=self.epoch, verbose=2,
                               callbacks=callbacks_list, validation_data=(test_x, test_y), shuffle=True)
         self.model.save(self.model_name)

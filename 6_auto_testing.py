@@ -179,7 +179,7 @@ class AutoTester:
             model_cnt += 1
             model_res = defaultdict()
             if write_video:
-                os.makedirs(self.video_path + "_" + model.split("\\")[-1][:-4], exist_ok=True)
+                os.makedirs(self.video_path + "_" + model.split("/")[-1][:-4], exist_ok=True)
             print("\n[{}/{}] ---> Testing model {}".format(model_cnt, len(self.models), model))
             self.model_name.append(model.split("\\")[-1])
             video_cnt = 0

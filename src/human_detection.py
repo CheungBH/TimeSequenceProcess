@@ -5,7 +5,6 @@ from src.estimator.visualize import KeyPointVisualizer
 from src.tracker.track import ObjectTracker
 from src.tracker.visualize import IDVisualizer
 import torch
-from src.tracker.sort import Sort
 import cv2
 import copy
 from utils.utils import gray3D

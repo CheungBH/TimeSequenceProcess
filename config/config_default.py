@@ -147,7 +147,7 @@ batch_size = {"LSTM": 8, "TCN": 8, "ConvLSTM": 8, "ConvGRU": 8, "BiLSTM": 8}
 kps_num = 34
 training_frame = 20
 log_interval = 5
-train_val_ratio = 0.2
+train_val_ratio = 0.4
 training_labels = {0: "drown", 1: "swim" }
 
 

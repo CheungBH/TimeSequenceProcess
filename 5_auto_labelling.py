@@ -1,8 +1,5 @@
-import cv2
 from src.human_detection import ImgprocessorAllKPS as ImgProcessor
-from collections import defaultdict
 import os
-from config import config
 from utils.utils import *
 
 cls = config.label_cls
