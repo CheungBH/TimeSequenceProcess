@@ -40,7 +40,7 @@ class TCNTrainer:
 
         self.data, self.label = self.__load_data(data_path)
         sample = [(d, l) for d, l in zip(self.data, self.label)]
-        train_sample, test_sample = train_test_split(sample, test_size=0.2, random_state=42, shuffle=True)
+        train_sample, test_sample = train_test_split(sample, test_size=config.train_val_ratio, random_state=42, shuffle=True)
         train_data, train_labels = self.__separate_sample(train_sample)
         test_data, test_labels = self.__separate_sample(test_sample)
         train_set = TCNLoader(train_data, train_labels, n_classes)

@@ -23,7 +23,7 @@ os.makedirs(os.path.join(res_dest, "log"), exist_ok=True)
 # n_classes = len(config.training_labels)
 with open(os.path.join(src_data_path, "cls.txt"), "r") as cls_file:
     n_classes = len(cls_file.readlines())
-n_classes = config.num_classes_pose
+
 
 
 if __name__ == '__main__':

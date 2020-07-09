@@ -1,7 +1,9 @@
+
 import cv2
 from src.human_detection import HumanDetection
 import os
 from utils.utils import *
+from config import config
 
 cls = config.label_cls
 frame_length = config.label_frame

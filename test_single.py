@@ -8,7 +8,7 @@ import numpy as np
 import os
 
 
-cls = ["drown_side","Stand","swim"]
+cls = ["drown_side"]
 num_classes = len(cls)
 seq_length = 30
 IP = ImgProcessor()
@@ -91,9 +91,9 @@ class Tester:
                     for key in kps:
                         coord = self.__normalize_coordinates(kps[key])
                         self.kps_dict[key].append(coord)
-                    self.__detect_kps()
+                    self.__detect_kps_pro()
 
-                img = cv2.resize(img, (1960,1080))
+                img = cv2.resize(img, (540,360))
                 img = self.__put_pred(img)
 
                 cv2.putText(img, "Frame cnt: {}".format(cnt), (300, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1)
@@ -110,14 +110,14 @@ class Tester:
 
 
 if __name__ == '__main__':
-    model_path = "6_network/3_class_30_0626/model/TCN_struct6_2020-06-26-15-27-41.pth"
+    model_path = "6_network/test/TCN_struct1_2020-07-03-14-18-06.pth"
 
     # video = "1_video/swim/1_1_Trim.mp4"
     # Tester(model_path, video).test()
 
     #video_folder = "7_test/test/"
     #video_folder = "7_test/test_carol/video/"
-    video_folder = "7_test/test/video/"
+    video_folder = "7_test/test_carol/video/"
     for video in os.listdir(video_folder):
         Tester(model_path, os.path.join(video_folder, video)).test()
 
