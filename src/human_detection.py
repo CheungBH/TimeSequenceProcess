@@ -2,9 +2,6 @@ import torch
 import cv2
 import copy
 import numpy as np
-from config import config
-
-
 from src.estimator.pose_estimator import PoseEstimator
 from src.estimator.visualize import KeyPointVisualizer
 from src.detector.yolo_detect import ObjectDetectionYolo

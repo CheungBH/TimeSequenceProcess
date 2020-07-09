@@ -15,6 +15,7 @@ cls = ["swim", "drown"]
 class TCNPredictor:
     def __init__(self, model_name, n_classes):
         structure_num = int((model_name.split("/")[-1]).split('_')[1][6:])
+        #structure_num = 1
         [channel_size, kernel_size, dilation] = TCN_params[structure_num]
         self.model = TCN(input_size=kps_num,
                          output_size=n_classes,
@@ -38,6 +39,13 @@ class TCNPredictor:
         output = self.model(input)
         #print('output:',output)
         pred = output.data.max(1, keepdim=True)[1]
+        #print('pred:',pred)
+        return pred
+
+    def predict_pos(self, data):
+        input = self.get_input_data(data)
+        pred = self.model(input)
+        #print('output:',output)
         #print('pred:',pred)
         return pred
 

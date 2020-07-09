@@ -1,6 +1,7 @@
 import torch.nn.functional as F
 from torch import nn
 from .tcn import TemporalConvNet
+from config.config import TCN_single
 
 
 class TCN(nn.Module):
@@ -14,4 +15,9 @@ class TCN(nn.Module):
         y1 = self.tcn(inputs)  # input should have dimension (N, C, L)
         #y1 = self.linear(y1)
         o = self.linear(y1[:, :, -1])
+        if TCN_single:
+            return (F.sigmoid(o))*o
         return F.log_softmax(o, dim=1)
+        #print((F.sigmoid(o))*o)
+
+        #return (F.sigmoid(o))*o
