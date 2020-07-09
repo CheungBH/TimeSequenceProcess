@@ -124,7 +124,7 @@ def str2kpsdict(s):
     for item in id_kps[:-1]:
         [idx, rawkps] = item.split(":")
         kps_ls, kps = rawkps.split(","), []
-        for i in range(config.body_part_num):
+        for i in range(config.pose_cls):
             kps.append([float(kps_ls[i*2]), float(kps_ls[i*2+1])])
         d[idx] = kps
     return d
