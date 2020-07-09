@@ -42,7 +42,7 @@ TCN_structure = {1:[[6, 6, 6, 6], 5, 2],
                  7: [[6, 6, 6, 6], 7, 8],
                  8: [[6, 6, 6, 6], 7, 1],
                  }
-
+TCN_single = True
 
 # ConvLSTM structure
 ConvLSTM_structure = {1: [[128, 64, 64, 32, 32], (7, 7), False],
