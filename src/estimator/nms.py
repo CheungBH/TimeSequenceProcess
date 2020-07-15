@@ -13,7 +13,7 @@ areaThres = 0#40 * 40.5
 alpha = 0.1
 
 
-def pose_nms(bboxes, bbox_scores, pose_preds, pose_scores):
+def pose_nms(bboxes, pose_preds, pose_scores):
     '''
     Parametric Pose NMS algorithm
     bboxes:         bbox locations list (n, 4)
@@ -28,7 +28,6 @@ def pose_nms(bboxes, bbox_scores, pose_preds, pose_scores):
     final_result = []
     final_score = []
 
-    ori_bbox_scores = bbox_scores.clone()
     ori_pose_preds = pose_preds.clone()
     ori_pose_scores = pose_scores.clone()
 
@@ -72,15 +71,14 @@ def pose_nms(bboxes, bbox_scores, pose_preds, pose_scores):
         pose_scores = np.delete(pose_scores, delete_ids, axis=0)
         human_ids = np.delete(human_ids, delete_ids)
         human_scores = np.delete(human_scores, delete_ids, axis=0)
-        bbox_scores = np.delete(bbox_scores, delete_ids, axis=0)
 
     assert len(merge_ids) == len(pick)
     preds_pick = ori_pose_preds[pick]
     scores_pick = ori_pose_scores[pick]
-    bbox_scores_pick = ori_bbox_scores[pick]
     #final_result = pool.map(filter_result, zip(scores_pick, merge_ids, preds_pick, pick, bbox_scores_pick))
     #final_result = [item for item in final_result if item is not None]
 
+    final_id = []
     for j in range(len(pick)):
         ids = np.arange(pose_cls)
         max_score = torch.max(scores_pick[j, ids, 0])
@@ -105,9 +103,10 @@ def pose_nms(bboxes, bbox_scores, pose_preds, pose_scores):
         if (1.5 ** 2 * (xmax - xmin) * (ymax - ymin) < areaThres):
             continue
 
+        final_id.append(pick[j])
         final_result.append(merge_pose)
         final_score.append(merge_score)
-    return final_result, final_score
+    return final_result, final_score, final_id
 
 
 def p_merge_fast(ref_pose, cluster_preds, cluster_scores, ref_dist):

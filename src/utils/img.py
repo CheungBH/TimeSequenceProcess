@@ -34,6 +34,11 @@ def cut_image(img, bottom=0, top=0, left=0, right=0):
     return np.asarray(img[top: height - bottom, left: width - right])
 
 
+def cut_image_with_box(img, bottom=0, top=0, left=0, right=0):
+    height, width = img.shape[0], img.shape[1]
+    return np.asarray(img[top: bottom, left: right])
+
+
 def load_image(img_path):
     # H x W x C => C x H x W
     return im_to_torch(scipy.misc.imread(img_path, mode='RGB'))

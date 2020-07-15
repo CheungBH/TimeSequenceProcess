@@ -18,6 +18,7 @@ class PoseEstimator(object):
         elif config.pose_backbone == "mobilenet":
             from src.pose_model.mobilenet.MobilePose import createModel
             self.pose_model = createModel(cfg=config.pose_cfg)
+            self.pose_model.load_state_dict(torch.load(pose_weight, map_location=device))
         else:
             raise ValueError("Not a backbone!")
         if config.device != "cpu":
@@ -29,7 +30,7 @@ class PoseEstimator(object):
         print("Pose estimation: Inference time {}s, Params {}, FLOPs {}".format(inf_time, params, flops))
         self.batch_size = config.pose_batch
 
-    def process_img(self, inps, boxes, scores, pt1, pt2):
+    def process_img(self, inps, boxes, pt1, pt2):
         datalen = inps.size(0)
         leftover = 0
         if (datalen) % self.batch_size:
@@ -48,7 +49,7 @@ class PoseEstimator(object):
 
         preds_hm, preds_img, preds_scores = getPrediction(
             hm, pt1, pt2, config.input_height, config.input_width, config.output_height, config.output_width)
-        kps, kps_score = pose_nms(boxes, scores, preds_img, preds_scores)
+        kps, kps_score, kps_id = pose_nms(boxes, preds_img, preds_scores)
 
-        return kps, kps_score
+        return kps, kps_score, kps_id
 
