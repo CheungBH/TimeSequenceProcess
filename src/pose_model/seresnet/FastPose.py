@@ -6,6 +6,7 @@ from .layers.SE_Resnet import SEResnet
 from ..duc.DUC import DUC
 from config.config import pose_cls, device
 from config import config
+from config.model_cfg import seresnet_cfg
 
 
 class FastPose(nn.Module):
@@ -47,6 +48,8 @@ class FastPose(nn.Module):
 
 
 def createModel(cfg=None):
+    if cfg is not None:
+        cfg = seresnet_cfg[cfg]
     return FastPose(cfg)
 
 
